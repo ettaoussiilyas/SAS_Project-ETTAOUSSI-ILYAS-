@@ -34,33 +34,35 @@ typedef struct {
 
 Reclamations reclamations[size_max];
 
-int choix_menu_signin_signup,choix_menu_administration,choix_menu_statistique,choix_menu_client,choix_menu_agent;
+int choix_menu_signin_signup,choix_menu_administration,choix_menu_client,choix_menu_agent;
 int clients_count = 0;
 int reclamation_count = 0;
 
 // prototypes
 void menu_administration();
-void menu_statistique();
 void menu_signup_signin();
 void menu_client();
+void menu_agent();
 int validation_password(char password[] , char username[]);
 void singup();
 void singin();
-//client functions
 void ajouter_reclamation();
 void afficher_reclamation();
 void supprimer_reclamation();
-//Supper Admin Init Prototype
 void super_admin();
 void super_agent();
-void menu_agent();
-//agent et admin functions
 void afficher_tout_reclamations();
 void changement_statu();
 void recherche_par_status();
 void modifier_reclamation();
 void changement_role_utilisateur();
+int definir_priorite(char description[]);
+void afficher_reclamations_par_priorite();
+void taux_resolution();
+void rapport_de_jour();
 //**********************************************************
+
+
 int main(){
     super_admin();
     super_agent();
@@ -96,18 +98,27 @@ int main(){
 void menu_administration(){
 
     do{
-        printf("\n#############################################");
-        printf("\n#########      ADMINISTRATOR      ###########");
-        printf("\n#############################################");
-        printf("\n#### Pour Afficher Les Reclamation : 1 ######");
-        printf("\n#### Pour Supprimer Une Reclamation : 2 #####");
-        printf("\n#### Pour Modifier Status Reclamation : 3 ###");
-        printf("\n#### Pour ID Reclamtion Rechecher : 4 #######");
-        printf("\n#### Pour Rechecher Status Reclamtion : 5 ###");
-        printf("\n#### Pour Modifier Une Reclamation : 6 ######");
-        printf("\n#### Pour Changer Les Roles : 7     #########");
-        printf("\n#### Pour Logout Click 0          ###########");
-        printf("\n#############################################");
+        printf("\n####################################################");
+        printf("\n############       ADMINISTRATOR      ##############");
+        printf("\n####################################################");
+        printf("\n#### Pour Afficher Les Reclamation : 1       #######");//done
+        printf("\n#### Pour Supprimer Une Reclamation : 2     ########");//done
+        printf("\n#### Pour Modifier Status Reclamation : 3 ##########");//done
+        printf("\n#### Pour ID Reclamtion Rechecher : 4    ###########");//done
+        printf("\n#### Pour Rechecher Status Reclamtion : 5 ##########");//done
+        printf("\n#### Pour Modifier Une Reclamation : 6     #########");//done
+        printf("\n#### Pour Changer Les Roles : 7             ########");//done
+        printf("\n#### Pour Afficher les Reclamations Trier: 8 #######");//done
+        printf("\n####################################################");
+        printf("\n########           STATISTIQUE            ##########");
+        printf("\n####################################################");
+        printf("\n#### Pour Afficher le Total de Reclamations : 9 ####");//done
+        printf("\n#### Pour Afficher le Taux de Resolution    : 10 ###");//done
+        printf("\n#### Pour Calcule le Rapport d'Jour traitement: 11##");
+        printf("\n#### Pour Rapport de Jour : 12                     #");//done
+        printf("\n####################################################");
+        printf("\n###########     Pour Logout Click 0     ############");
+        printf("\n####################################################");
         printf("\nVotre Choix : ");
         scanf("%d", &choix_menu_administration);
         switch(choix_menu_administration){
@@ -132,6 +143,21 @@ void menu_administration(){
             case 7:
                 changement_role_utilisateur();
                 break;
+            case 8:
+                afficher_reclamations_par_priorite();
+                break;
+            case 9:
+                printf("le Total de Reclamations: %d\n", reclamation_count);
+                break;
+            case 10:
+                taux_resolution();
+                break;
+            case 11:
+                //changement_role_utilisateur();
+                break;
+            case 12:
+                rapport_de_jour();
+                break;
             case 0:
                 printf("Merci, a La Prochaine.");
                 main();
@@ -141,33 +167,6 @@ void menu_administration(){
                 break;
         }
     }while (choix_menu_administration!=0);  
-}
-void menu_statistique(){
-    do{
-        printf("\n####################################################");
-        printf("\n########           STATISTIQUE            ##########");
-        printf("\n####################################################");
-        printf("\n#### Pour Afficher le Total de Reclamations : 1 ####");
-        printf("\n#### Pour Afficher le Taux de Resolution    : 2 ####");
-        printf("\n#### Pour Calculer le delai moyen de traitement: 3##");
-        printf("\n#### Pour Rapport de Jour : 4     ##################");
-        printf("\n#### Pour LougOut Click : 0          ###############");
-        printf("\n####################################################");
-        printf("\nVotre Choix : ");
-        scanf("%d", &choix_menu_statistique);
-        switch (choix_menu_statistique){
-            case 0:
-                printf("Merci , a La Prochaine.\n");
-                main();
-                break;
-            default:
-                printf("Merci de Saisir un Nombre Correct.\n");
-                break;
-        }
-    }while (choix_menu_statistique!=0);
-
-    
-
 }
 void menu_signup_signin(){
 
@@ -259,7 +258,6 @@ void menu_agent(){//done
         }
     }while (choix_menu_agent!=0);    
 }
-//check functions
 void get_current_date(char *date_str) {
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
@@ -285,7 +283,6 @@ int validation_password(char password[], char username[]) {
     }
     
 }
-//connexion functions
 void singup(){
     Clients noveauclient;
     char password[100];
@@ -303,7 +300,6 @@ void singup(){
     clients[clients_count++]=noveauclient;
     printf("\nVotre Compte a ete Cree avec succes.\n");
 }
-
 void singin() {
     char username_login[50], password_login[50];
     int tentative = 0, trouve = 0;
@@ -351,12 +347,10 @@ void singin() {
 
     // After 3 failed attempts
     if (tentative == 3) {
-        printf("\nEssayer après 30 minutes.\n");
+        printf("\nEssayer apres 30 minutes.\n");
         exit(0);  // Exit the program
     }
 }
-
-//client functions
 void ajouter_reclamation() {
     Reclamations noveau_reclamation;
     //noveau_reclamation.creation_time = time(NULL);
@@ -411,7 +405,6 @@ void supprimer_reclamation(){//adimn - agent
     }
     printf("Id de Reclamation Pas Trouver.\n");
 }
-
 void super_admin(){
     Clients admin;
     strcpy(admin.username, "admin");
@@ -428,7 +421,6 @@ void super_agent(){
     agent.loginAttempts = 0;
     clients[clients_count++] = agent;
 }
-
 void afficher_tout_reclamations(){//admin-agent
     int trouver = 0;
     printf("\nVoila Tout Les Reclamations : \n");
@@ -448,7 +440,6 @@ void afficher_tout_reclamations(){//admin-agent
         printf("\nAucun Reclamation Trouver Avec Ce ID !\n");
     }
 }
-
 void changement_statu(){
     int id_search, statut_change;
     printf("Saisir l'ID de la reclamation : ");
@@ -471,7 +462,6 @@ void changement_statu(){
     }
     printf("\nAucun Reclamation avec l'ID %d !!\n", id_search);
 }
-
 void recherche_par_status(){
     if(reclamation_count==0){
         printf("Aucune reclamation disponible.\n");
@@ -573,3 +563,111 @@ void changement_role_utilisateur(){
     // If the user was not found
     printf("\nAucun Nome d'utilisateur Avec : %s !!\n", username_search);
 }
+int definir_priorite(char description[]) {
+    if (strstr(description, "urgent") || strstr(description, "critique"))
+        return 3;  
+    else if (strstr(description, "important") || strstr(description, "presse"))
+        return 2;  
+    return 1;  
+}
+void afficher_reclamations_par_priorite(){
+    if (reclamation_count == 0) {
+        printf("Aucune reclamation disponible.\n");
+        return;
+    }
+    int indices[reclamation_count];  
+    for (int i = 0; i < reclamation_count; i++){
+        indices[i] = i;
+    }
+    for (int i = 0; i < reclamation_count - 1; i++){
+        for (int j = 0; j < reclamation_count - i - 1; j++) {
+            if (definir_priorite(reclamations[indices[j]].description) < definir_priorite(reclamations[indices[j + 1]].description)) {
+                
+                int temp = indices[j];
+                indices[j] = indices[j + 1];
+                indices[j + 1] = temp;
+            }
+        }
+    }
+
+
+    printf("\nReclamations par Priorite :\n");
+    for(int i = 0; i < reclamation_count; i++){
+        int index = indices[i];
+        printf("\n###############\n");
+        printf("ID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatut: %s\nDate: %s\nPriorite: %d\n\n",
+               reclamations[index].id, reclamations[index].motif, reclamations[index].description,
+               reclamations[index].category, reclamations[index].status, reclamations[index].date,
+               definir_priorite(reclamations[index].description));
+    }
+}
+void taux_resolution(){
+    if (reclamation_count == 0) {
+        printf("Aucune reclamation disponible.\n");
+        return;
+    }
+
+    int resolu_taux = 0;
+    for (int i = 0; i < reclamation_count; i++) {
+        if (strcmp(reclamations[i].status, "resolu") == 0) {
+            resolu_taux += 1;
+        }
+    }
+    float result = (float)resolu_taux / reclamation_count * 100;
+    printf("Le Taux de Resolution: %.2f%%\n", result); 
+}
+void rapport_de_jour(){
+    int nombre_en_coures = 0;
+    int nombre_resolues = 0;
+    int nombre_en_attente = 0;
+
+    printf("### Rapport Journalier des Reclamations ###\n\n");
+    printf("###########################################");
+    
+    printf("\nReclamations resolues aujourd'hui :\n");
+    for (int i = 0; i < reclamation_count; i++) {
+        if (strcmp(reclamations[i].status, "resolu") == 0) {
+            // Afficher les reclamations resolues
+            printf("ID: %d, Motif: %s, Date Traitement: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
+            nombre_resolues++;
+        }
+    }
+
+    if (nombre_resolues == 0) {
+        printf("Aucune reclamation resolue aujourd'hui.\n");
+    }
+   
+    printf("\nReclamations en Traitement aujourd'hui :\n");
+    for(int i = 0; i < reclamation_count; i++){
+        if (strcmp(reclamations[i].status, "en attente") == 0) {
+            // Afficher les reclamations resolues
+            printf("ID: %d, Motif: %s, Date Traitement: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
+            nombre_en_attente++;
+        }
+    }
+
+    if(nombre_en_attente == 0){
+        printf("Aucune reclamation en attente aujourd'hui.\n");
+    }
+
+    printf("\nNouvelles reclamations en cours :\n");
+    for(int i = 0; i < reclamation_count; i++){
+        if (strcmp(reclamations[i].status, "en cours") == 0) {
+            // Afficher les nouvelles reclamations non encore traitees
+            printf("ID: %d, Motif: %s, Date Soumission: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
+            nombre_en_coures++;
+        }
+    }
+
+    if(nombre_en_coures == 0){
+        printf("Aucune en cours traiter reclamation aujourd'hui.\n");
+    }
+    printf("\nNombre total de reclamations resolues : %d\n", nombre_resolues);
+    printf("Nombre total de nouvelles reclamations : %d\n", nombre_en_coures);
+    printf("=== Fin du rapport ===\n");
+}
+
+
+
+
+
