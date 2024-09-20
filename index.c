@@ -34,7 +34,7 @@ typedef struct {
 
 Reclamations reclamations[size_max];
 
-int choix_menu_signin_signup,choix_menu_administration,choix_menu_statistique,choix_menu_client;
+int choix_menu_signin_signup,choix_menu_administration,choix_menu_statistique,choix_menu_client,choix_menu_agent;
 int clients_count = 0;
 int reclamation_count = 0;
 
@@ -45,25 +45,23 @@ void menu_signup_signin();
 void menu_client();
 int validation_password(char password[] , char username[]);
 void singup();
-int singin();
+void singin();
 //client functions
 void ajouter_reclamation();
 void afficher_reclamation();
 void supprimer_reclamation();
-
-
+//Supper Admin Init Prototype
+void super_admin();
+void super_agent();
+void menu_agent();
+//agent et admin functions
+void afficher_tout_reclamations();
+void changement_statu();
+void recherche_par_status();
+//**********************************************************
 int main(){
-
-    ////////////////////////////////
-    Clients admin;
-    strcpy(admin.username, "suppper admin");
-    strcpy(admin.password, "AAbb00**");
-    strcpy(admin.role, "admin");
-    admin.loginAttempts = 0;
-    // Add the administrator to the clients array
-    clients[clients_count++] = admin;
-    ////////////////////////////////
-
+    super_admin();
+    super_agent();
     do{
         menu_signup_signin();
         switch (choix_menu_signin_signup)
@@ -71,17 +69,12 @@ int main(){
         case 1:
             singup();
             break;
-        case 2:{
-            int trouve=singin();
-            if(trouve==1){
-                menu_client();
-            }else{
-                exit(0);
-            }
+        case 2:
+            singin();
             break;
-        }
         case 0:
-        printf("Merci , a La Prochaine .");
+            printf("Merci , a La Prochaine .");
+            exit(0);
             break;
         
         default:
@@ -96,39 +89,67 @@ int main(){
     return 0;
 }
 
-void menu_administration(){//done
+//**********************************************************
+//menus connection
+void menu_administration(){
 
-    printf("\n####################################################");
-    printf("\n########        ADMINISTRATION            ##########");
-    printf("\n####################################################");
-    printf("\n#### Pour Gerer les roles : 1     ##################");
-    printf("\n#### Pour Afficher les reclamations : 2 ############");
-    printf("\n#### Pour Modifier une Reclamatio : 3 ##############");
-    printf("\n#### Pour Supprimer une Reclamation : 4 ############");
-    printf("\n#### Pour Changer le statut d'une reclamation : 5 ##");
-    printf("\n#### Pour Rechrecher a Une Reclamation Par ID : 6 ##");
-    printf("\n#### Pour Le Rapport et Statistique Click     : 7 ##");
-    printf("\n#### Pour LougOut Click : 0          ###############");
-    printf("\n####################################################");
-    printf("\nVotre Choix : ");
-    scanf("%d", &choix_menu_administration);
+    do{
+        printf("\n####################################################");
+        printf("\n########        ADMINISTRATION            ##########");
+        printf("\n####################################################");
+        printf("\n#### Pour Gerer les roles : 1     ##################");
+        printf("\n#### Pour Afficher les reclamations : 2 ############");
+        printf("\n#### Pour Modifier une Reclamatio : 3 ##############");
+        printf("\n#### Pour Supprimer une Reclamation : 4 ############");
+        printf("\n#### Pour Changer le statut d'une reclamation : 5 ##");
+        printf("\n#### Pour Rechrecher a Une Reclamation Par ID : 6 ##");
+        printf("\n#### Pour Le Rapport et Statistique Click     : 7 ##");
+        printf("\n#### Pour LougOut Click : 0          ###############");
+        printf("\n####################################################");
+        printf("\nVotre Choix : ");
+        scanf("%d", &choix_menu_administration);
+
+        switch (choix_menu_administration){
+            case 0:
+                printf("Merci , a La Prochaine.\n");
+                main();
+                break;
+
+            default:
+                printf("Merci de Saisir un Nombre Correct.\n");
+                break;
+        }
+    }while(choix_menu_administration!=0);
     
 }
-void menu_statistique(){//done
-    printf("\n####################################################");
-    printf("\n########           STATISTIQUE            ##########");
-    printf("\n####################################################");
-    printf("\n#### Pour Afficher le Total de Reclamations : 1 ####");
-    printf("\n#### Pour Afficher le Taux de Resolution    : 2 ####");
-    printf("\n#### Pour Calculer le delai moyen de traitement: 3##");
-    printf("\n#### Pour Rapport de Jour : 4     ##################");
-    printf("\n#### Pour LougOut Click : 0          ###############");
-    printf("\n####################################################");
-    printf("\nVotre Choix : ");
-    scanf("%d", &choix_menu_statistique);
+void menu_statistique(){
+    do{
+        printf("\n####################################################");
+        printf("\n########           STATISTIQUE            ##########");
+        printf("\n####################################################");
+        printf("\n#### Pour Afficher le Total de Reclamations : 1 ####");
+        printf("\n#### Pour Afficher le Taux de Resolution    : 2 ####");
+        printf("\n#### Pour Calculer le delai moyen de traitement: 3##");
+        printf("\n#### Pour Rapport de Jour : 4     ##################");
+        printf("\n#### Pour LougOut Click : 0          ###############");
+        printf("\n####################################################");
+        printf("\nVotre Choix : ");
+        scanf("%d", &choix_menu_statistique);
+        switch (choix_menu_statistique){
+            case 0:
+                printf("Merci , a La Prochaine.\n");
+                main();
+                break;
+            default:
+                printf("Merci de Saisir un Nombre Correct.\n");
+                break;
+        }
+    }while (choix_menu_statistique!=0);
+
+    
 
 }
-void menu_signup_signin(){//done
+void menu_signup_signin(){
 
     printf("\n########################################");
     printf("\n#####            WELLCOM           #####");
@@ -150,7 +171,7 @@ void menu_client(){//done
         printf("\n#### Pour Craer Une Reaclamation 1 #####");
         printf("\n#### Pour Afficher Une Reaclamation 2 ##");
         printf("\n#### Pour Supprimer Une Reaclamation 3 #");
-        printf("\n#### Pour Logout Click 0          #####");
+        printf("\n#### Pour Logout Click 0          ######");
         printf("\n########################################");
         printf("\nVotre Choix : ");
         scanf("%d", &choix_menu_client);
@@ -166,7 +187,7 @@ void menu_client(){//done
             break;
         case 0:
             printf("Merci, a La Prochaine.");
-            exit(0);
+            main();
         default:
             printf("Merci de Saisir un Nombre Correct.");
             break;
@@ -174,13 +195,54 @@ void menu_client(){//done
     }while(choix_menu_client!=0);
     
 }
-
+void menu_agent(){//done
+    do{
+        printf("\n#############################################");
+        printf("\n#########         AGENT           ###########");
+        printf("\n#############################################");
+        printf("\n#### Pour Afficher Les Reclamation : 1 ######");
+        printf("\n#### Pour Supprimer Une Reclamation : 2 #####");
+        printf("\n#### Pour Modifier Une Reclamation : 3 ######");
+        printf("\n#### Pour ID Reclamtion Rechecher : 4 #######");
+        printf("\n#### Pour Status Reclamtion Rechecher : 5 ###");
+        printf("\n#### Pour Logout Click 0          ###########");
+        printf("\n#############################################");
+        printf("\nVotre Choix : ");
+        scanf("%d", &choix_menu_agent);
+        switch(choix_menu_agent){
+            case 1:
+                afficher_tout_reclamations();
+                break;
+            case 2:
+                supprimer_reclamation();
+                break;
+            case 3:
+                changement_statu();
+                break;
+            case 4:
+                afficher_reclamation();
+                break;
+            case 5:
+                recherche_par_status();
+                break;
+            case 0:
+                printf("Merci, a La Prochaine.");
+                main();
+                break;
+            default:
+                printf("Merci de Saisir Le Choix Correctement !\n");
+                break;
+        }
+    }while (choix_menu_agent!=0);    
+}
+//check functions
 void get_current_date(char *date_str) {
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     sprintf(date_str, "%d-%02d-%02d", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
 }
 int validation_password(char password[], char username[]) {
+
     int is_majiscule = 0, is_miniscule = 0, is_num = 0, is_special = 0;
     
     if (strlen(password) < 8) return 0;
@@ -199,6 +261,7 @@ int validation_password(char password[], char username[]) {
     }
     
 }
+//connexion functions
 void singup(){
     Clients noveauclient;
     char password[100];
@@ -216,10 +279,11 @@ void singup(){
     clients[clients_count++]=noveauclient;
     printf("\nVotre Compte a ete Cree avec succes.\n");
 }
-int singin(){
+void singin(){
     char username_login[50], password_login[50];
     int tantative = 0 , trouve=0;
     do{
+        
         printf("\nMerci de Saisir votre username : ");
         getchar();
         fgets(username_login, sizeof(username_login), stdin);
@@ -233,9 +297,17 @@ int singin(){
             if(strcmp(username_login, clients[i].username)==0 && strcmp(password_login, clients[i].password)==0){
                 printf("\nBien Venue.\n");
                 trouve=1;
-                return 1;
-            }
 
+                if(strcmp(clients[i].role, "admin")==0){
+                    menu_administration();
+                }else if(strcmp(clients[i].role, "agent")==0){
+                    menu_agent();
+                }else if(strcmp(clients[i].role, "client")==0){
+                    menu_client();
+                }else{
+                    printf("Role inconnu.\n");
+                }
+            }
         }
         if(trouve==0){
             tantative++;
@@ -245,10 +317,10 @@ int singin(){
     
     if(tantative==3){
         printf("\nEssayer Aprer 30min.\n");
-        return 0;
+        exit(0);
     }
 }
-
+//client functions
 void ajouter_reclamation() {
     Reclamations noveau_reclamation;
     //noveau_reclamation.creation_time = time(NULL);
@@ -285,7 +357,7 @@ void afficher_reclamation() {
 
     printf("Reclamation avec l'ID %d non trouvee.\n", id_search);
 }
-void supprimer_reclamation(){
+void supprimer_reclamation(){//adimn - agent
     int id_supprimer;
     printf("Enter ID of reclamation to delete: ");
     scanf("%d", &id_supprimer);
@@ -303,5 +375,101 @@ void supprimer_reclamation(){
     printf("Id de Reclamation Pas Trouver.\n");
 }
 
+void super_admin(){
+    Clients admin;
+    strcpy(admin.username, "admin");
+    strcpy(admin.password, "AAaa11**");
+    strcpy(admin.role, "admin");
+    admin.loginAttempts = 0;
+    clients[clients_count++] = admin;
+}
+void super_agent(){
+    Clients agent;
+    strcpy(agent.username, "agent");
+    strcpy(agent.password, "AAaa00**");
+    strcpy(agent.role, "agent");
+    agent.loginAttempts = 0;
+    clients[clients_count++] = agent;
+}
 
+void afficher_tout_reclamations(){//admin-agent
+    int trouver = 0;
+    printf("\nVoila Tout Les Reclamations : \n");
+    if (reclamation_count == 0) {
+        printf("Aucune reclamation disponible.\n");
+        return;
+    }
+    for (int i = 0; i < reclamation_count; i++) {
 
+        printf("\n###############\n");
+        printf("ID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatut: %s\nDate: %s\n\n",
+        reclamations[i].id, reclamations[i].motif, reclamations[i].description,
+        reclamations[i].category, reclamations[i].status, reclamations[i].date);
+        trouver = 1;
+    }
+    if(trouver==0){
+        printf("\nAucun Reclamation Trouver Avec Ce ID !\n");
+    }
+}
+
+void changement_statu(){
+    int id_search, statut_change;
+    printf("Saisir l'ID de la reclamation : ");
+    scanf("%d", &id_search);
+    printf("Saisir le nouveau statut [0: en cours, 1: en attente, 2: resolu]: ");
+    scanf("%d", &statut_change);
+
+    for (int i = 0; i < reclamation_count; i++) {
+        if (reclamations[i].id == id_search) {
+            if(statut_change==0){
+                strcpy(reclamations[i].status, "en cours");
+            }else if(statut_change==1){
+                strcpy(reclamations[i].status, "en attente");
+            } else if(statut_change==2){
+                strcpy(reclamations[i].status, "resolu");
+            }
+            printf("Statut Bien Modifie.\n");
+            return;
+        }
+    }
+    printf("\nAucun Reclamation avec l'ID %d !!\n", id_search);
+}
+
+void recherche_par_status(){
+    if(reclamation_count==0){
+        printf("Aucune reclamation disponible.\n");
+        return;
+    }
+    int statut_recherche;
+    printf("Saisir le statut recherche [0: en cours, 1: en attente, 2: resolu]: ");
+    scanf("%d", &statut_recherche);
+    char statut_str[20];
+    switch(statut_recherche) {
+        case 0:
+            strcpy(statut_str,"en cours");
+            break;
+        case 1:
+            strcpy(statut_str,"en attente");
+            break;
+        case 2:
+            strcpy(statut_str,"resolu");
+            break;
+        default:
+            printf("Choix Invalide.\n");
+            return;
+    }
+    int trouver = 0;
+    for(int i = 0; i < reclamation_count; i++){
+        if(strcmp(reclamations[i].status,statut_str)==0){
+            printf("\n#####################\n");
+            printf("ID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatut: %s\nDate: %s\n\n",
+            reclamations[i].id, reclamations[i].motif, reclamations[i].description,
+            reclamations[i].category, reclamations[i].status, reclamations[i].date);
+            trouver = 1;
+        }
+    }
+    if(trouver==0){
+        printf("\nAucune Reclamation Trouver Avec Ce Statut!!\n");
+    }
+        
+}
