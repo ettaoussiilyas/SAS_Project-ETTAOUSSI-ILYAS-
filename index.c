@@ -58,6 +58,8 @@ void menu_agent();
 void afficher_tout_reclamations();
 void changement_statu();
 void recherche_par_status();
+void modifier_reclamation();
+void changement_role_utilisateur();
 //**********************************************************
 int main(){
     super_admin();
@@ -94,33 +96,51 @@ int main(){
 void menu_administration(){
 
     do{
-        printf("\n####################################################");
-        printf("\n########        ADMINISTRATION            ##########");
-        printf("\n####################################################");
-        printf("\n#### Pour Gerer les roles : 1     ##################");
-        printf("\n#### Pour Afficher les reclamations : 2 ############");
-        printf("\n#### Pour Modifier une Reclamatio : 3 ##############");
-        printf("\n#### Pour Supprimer une Reclamation : 4 ############");
-        printf("\n#### Pour Changer le statut d'une reclamation : 5 ##");
-        printf("\n#### Pour Rechrecher a Une Reclamation Par ID : 6 ##");
-        printf("\n#### Pour Le Rapport et Statistique Click     : 7 ##");
-        printf("\n#### Pour LougOut Click : 0          ###############");
-        printf("\n####################################################");
+        printf("\n#############################################");
+        printf("\n#########      ADMINISTRATOR      ###########");
+        printf("\n#############################################");
+        printf("\n#### Pour Afficher Les Reclamation : 1 ######");
+        printf("\n#### Pour Supprimer Une Reclamation : 2 #####");
+        printf("\n#### Pour Modifier Status Reclamation : 3 ###");
+        printf("\n#### Pour ID Reclamtion Rechecher : 4 #######");
+        printf("\n#### Pour Rechecher Status Reclamtion : 5 ###");
+        printf("\n#### Pour Modifier Une Reclamation : 6 ######");
+        printf("\n#### Pour Changer Les Roles : 7     #########");
+        printf("\n#### Pour Logout Click 0          ###########");
+        printf("\n#############################################");
         printf("\nVotre Choix : ");
         scanf("%d", &choix_menu_administration);
-
-        switch (choix_menu_administration){
+        switch(choix_menu_administration){
+            case 1:
+                afficher_tout_reclamations();
+                break;
+            case 2:
+                supprimer_reclamation();
+                break;
+            case 3:
+                changement_statu();
+                break;
+            case 4:
+                afficher_reclamation();
+                break;
+            case 5:
+                recherche_par_status();
+                break;
+            case 6:
+                modifier_reclamation();
+                break;
+            case 7:
+                changement_role_utilisateur();
+                break;
             case 0:
-                printf("Merci , a La Prochaine.\n");
+                printf("Merci, a La Prochaine.");
                 main();
                 break;
-
             default:
-                printf("Merci de Saisir un Nombre Correct.\n");
+                printf("Merci de Saisir Le Choix Correctement !\n");
                 break;
         }
-    }while(choix_menu_administration!=0);
-    
+    }while (choix_menu_administration!=0);  
 }
 void menu_statistique(){
     do{
@@ -202,9 +222,10 @@ void menu_agent(){//done
         printf("\n#############################################");
         printf("\n#### Pour Afficher Les Reclamation : 1 ######");
         printf("\n#### Pour Supprimer Une Reclamation : 2 #####");
-        printf("\n#### Pour Modifier Une Reclamation : 3 ######");
+        printf("\n#### Pour Modifier Status Reclamation : 3 ###");
         printf("\n#### Pour ID Reclamtion Rechecher : 4 #######");
-        printf("\n#### Pour Status Reclamtion Rechecher : 5 ###");
+        printf("\n#### Pour Rechecher Status Reclamtion : 5 ###");
+        printf("\n#### Pour Modifier Une Reclamation : 6 ######");
         printf("\n#### Pour Logout Click 0          ###########");
         printf("\n#############################################");
         printf("\nVotre Choix : ");
@@ -224,6 +245,9 @@ void menu_agent(){//done
                 break;
             case 5:
                 recherche_par_status();
+                break;
+            case 6:
+                modifier_reclamation();
                 break;
             case 0:
                 printf("Merci, a La Prochaine.");
@@ -279,47 +303,95 @@ void singup(){
     clients[clients_count++]=noveauclient;
     printf("\nVotre Compte a ete Cree avec succes.\n");
 }
-void singin(){
-    char username_login[50], password_login[50];
-    int tantative = 0 , trouve=0;
-    do{
+// void singin(){
+//     char username_login[50], password_login[50];
+//     int tantative = 0 , trouve=0;
+//     do{
         
+//         printf("\nMerci de Saisir votre username : ");
+//         getchar();
+//         fgets(username_login, sizeof(username_login), stdin);
+//         username_login[strcspn(username_login, "\n")] = '\0';
+
+//         printf("\nMerci de Saisir votre password : ");
+//         fgets(password_login,sizeof(password_login),stdin);
+//         password_login[strcspn(password_login, "\n")] = '\0';
+
+//         for(int i=0 ; i<clients_count;i++){
+//             if(strcmp(username_login, clients[i].username)==0 && strcmp(password_login, clients[i].password)==0){
+//                 printf("\nBien Venue.\n");
+//                 trouve=1;
+
+//                 if(strcmp(clients[i].role, "admin")==0){
+//                     menu_administration();
+//                 }else if(strcmp(clients[i].role, "agent")==0){
+//                     menu_agent();
+//                 }else if(strcmp(clients[i].role, "client")==0){
+//                     menu_client();
+//                 }else{
+//                     printf("Role inconnu.\n");
+//                 }
+//             }
+//         }
+//         if(trouve==0){
+//             tantative++;
+//         }
+        
+//     }while(tantative != 3);
+    
+//     if(tantative==3){
+//         printf("\nEssayer Aprer 30min.\n");
+//         exit(0);
+//     }
+// }
+void singin() {
+    char username_login[50], password_login[50];
+    int tentative = 0, trouve = 0;
+
+    do {
         printf("\nMerci de Saisir votre username : ");
-        getchar();
+        getchar();  // Clear the input buffer
         fgets(username_login, sizeof(username_login), stdin);
-        username_login[strcspn(username_login, "\n")] = '\0';
+        username_login[strcspn(username_login, "\n")] = '\0';  // Remove newline
 
         printf("\nMerci de Saisir votre password : ");
-        fgets(password_login,sizeof(password_login),stdin);
-        password_login[strcspn(password_login, "\n")] = '\0';
+        fgets(password_login, sizeof(password_login), stdin);
+        password_login[strcspn(password_login, "\n")] = '\0';  // Remove newline
 
-        for(int i=0 ; i<clients_count;i++){
-            if(strcmp(username_login, clients[i].username)==0 && strcmp(password_login, clients[i].password)==0){
-                printf("\nBien Venue.\n");
-                trouve=1;
+        for (int i = 0; i < clients_count; i++) {
+            if (strcmp(username_login, clients[i].username) == 0 && strcmp(password_login, clients[i].password) == 0) {
+                printf("\nBienvenu %s.\n", clients[i].username);
+                trouve = 1;
 
-                if(strcmp(clients[i].role, "admin")==0){
+                if (strcmp(clients[i].role, "Administrateur") == 0) {
                     menu_administration();
-                }else if(strcmp(clients[i].role, "agent")==0){
+                } else if (strcmp(clients[i].role, "Agent") == 0) {
                     menu_agent();
-                }else if(strcmp(clients[i].role, "client")==0){
+                } else if (strcmp(clients[i].role, "Client") == 0) {
                     menu_client();
-                }else{
+                } else {
                     printf("Role inconnu.\n");
                 }
+
+                // Exit the loop after successful login
+                return;
             }
         }
-        if(trouve==0){
-            tantative++;
+
+        if (trouve == 0) {
+            tentative++;
+            printf("\nIdentifiants incorrects. Tentative %d/3.\n", tentative);
         }
-        
-    }while(tantative != 3);
-    
-    if(tantative==3){
-        printf("\nEssayer Aprer 30min.\n");
-        exit(0);
+
+    } while (tentative < 3);
+
+   
+    if (tentative == 3) {
+        printf("\nEssayer apres 30 minutes.\n");
+        exit(0);  
     }
 }
+
 //client functions
 void ajouter_reclamation() {
     Reclamations noveau_reclamation;
@@ -327,15 +399,16 @@ void ajouter_reclamation() {
     noveau_reclamation.id = reclamation_count+1;
     noveau_reclamation.date[11]; 
     get_current_date(noveau_reclamation.date);
-    printf("\nSaisir Le Motif : ");
-    scanf(" %[^\n]s", noveau_reclamation.motif);
-    printf("\nSaisir Description : ");
-    scanf(" %[^\n]s", noveau_reclamation.description);
-    printf("\nSaisir Category : ");
-    scanf("%s", noveau_reclamation.category);
+    printf("Saisir la Description : ");
+    getchar();
+    fgets(noveau_reclamation.description, sizeof(noveau_reclamation.description), stdin);
+    printf("Saisir le Motif : ");
+    fgets(noveau_reclamation.motif, sizeof(noveau_reclamation.motif), stdin);
+    printf("Saisir la Categorie : ");
+    fgets(noveau_reclamation.category, sizeof(noveau_reclamation.category), stdin);
     strcpy(noveau_reclamation.status, "en cours");
     reclamations[reclamation_count++] = noveau_reclamation;    
-    printf("Reclamation Bien Enregester ID %d.\n", noveau_reclamation.id);   
+    printf("\nReclamation Bien Enregester ID %d.\n", noveau_reclamation.id);   
 }
 void afficher_reclamation() {
     int id_search;
@@ -348,7 +421,7 @@ void afficher_reclamation() {
 
     for (int i = 0; i < reclamation_count; i++) {
         if (reclamations[i].id == id_search) {
-            printf("ID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatut: %s\nDate: %s\n\n",
+            printf("\nID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatut: %s\nDate: %s\n\n",
                    reclamations[i].id, reclamations[i].motif, reclamations[i].description,
                    reclamations[i].category, reclamations[i].status, reclamations[i].date);
             return;
@@ -472,4 +545,67 @@ void recherche_par_status(){
         printf("\nAucune Reclamation Trouver Avec Ce Statut!!\n");
     }
         
+}
+void modifier_reclamation(){
+    if(reclamation_count==0){
+        printf("Aucune reclamation disponible.\n");
+        return;
+    }
+    int id_recherche;
+    int trouve=0;
+    printf("Saisir l'ID de la reclamation : ");
+    scanf("%d", &id_recherche);
+    for (int i = 0; i < reclamation_count; i++) {
+        if (reclamations[i].id == id_recherche) {
+            printf("Saisir la nouvelle description : ");
+            getchar();
+            fgets(reclamations[i].description, sizeof(reclamations[i].description), stdin);
+            printf("Saisir le nouveau motif : ");
+            fgets(reclamations[i].motif, sizeof(reclamations[i].motif), stdin);
+            printf("Saisir la nouvelle categorie : ");
+            fgets(reclamations[i].category, sizeof(reclamations[i].category), stdin);
+            trouve = 1;
+            return;
+        }
+    }
+    if(trouve==0){
+        printf("\nAucune Reclamation avec l'ID %d!!\n", id_recherche);
+        return;
+    }
+}
+void changement_role_utilisateur(){
+    char username_search[50];
+    printf("Saisir le Nome d'utilisateur : ");
+    scanf("%s", username_search);
+    // getchar();
+    // fgets(username_search, sizeof(username_search), stdin);
+    for (int i = 0; i < clients_count; i++) {
+        if(strcmp(clients[i].username, username_search) == 0) {
+            int role_choice;
+            printf("Saisir le Nouveau Role [Administrateur: 0, Agent: 1, Client: 2]: ");
+            scanf("%d", &role_choice);
+
+            // Assign the role based on the choice using a switch statement
+            switch (role_choice) {
+                case 0:
+                    strcpy(clients[i].role, "admin");
+                    break;
+                case 1:
+                    strcpy(clients[i].role, "agent");
+                    break;
+                case 2:
+                    strcpy(clients[i].role, "client");
+                    break;
+                default:
+                    printf("\nChoix invalide. Veuillez entrer 0, 1 ou 2.\n");
+                    return;
+            }
+
+            printf("\nLe role de l'utilisateur %s a ete bien modifie en %s.\n", username_search, clients[i].role);
+            return;
+        }
+    }
+
+    // If the user was not found
+    printf("\nAucun Nome d'utilisateur Avec : %s !!\n", username_search);
 }
