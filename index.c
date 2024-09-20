@@ -303,54 +303,16 @@ void singup(){
     clients[clients_count++]=noveauclient;
     printf("\nVotre Compte a ete Cree avec succes.\n");
 }
-// void singin(){
-//     char username_login[50], password_login[50];
-//     int tantative = 0 , trouve=0;
-//     do{
-        
-//         printf("\nMerci de Saisir votre username : ");
-//         getchar();
-//         fgets(username_login, sizeof(username_login), stdin);
-//         username_login[strcspn(username_login, "\n")] = '\0';
 
-//         printf("\nMerci de Saisir votre password : ");
-//         fgets(password_login,sizeof(password_login),stdin);
-//         password_login[strcspn(password_login, "\n")] = '\0';
-
-//         for(int i=0 ; i<clients_count;i++){
-//             if(strcmp(username_login, clients[i].username)==0 && strcmp(password_login, clients[i].password)==0){
-//                 printf("\nBien Venue.\n");
-//                 trouve=1;
-
-//                 if(strcmp(clients[i].role, "admin")==0){
-//                     menu_administration();
-//                 }else if(strcmp(clients[i].role, "agent")==0){
-//                     menu_agent();
-//                 }else if(strcmp(clients[i].role, "client")==0){
-//                     menu_client();
-//                 }else{
-//                     printf("Role inconnu.\n");
-//                 }
-//             }
-//         }
-//         if(trouve==0){
-//             tantative++;
-//         }
-        
-//     }while(tantative != 3);
-    
-//     if(tantative==3){
-//         printf("\nEssayer Aprer 30min.\n");
-//         exit(0);
-//     }
-// }
 void singin() {
     char username_login[50], password_login[50];
     int tentative = 0, trouve = 0;
 
     do {
+        
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF); // Flush input buffer before taking the first input
         printf("\nMerci de Saisir votre username : ");
-        getchar();  // Clear the input buffer
         fgets(username_login, sizeof(username_login), stdin);
         username_login[strcspn(username_login, "\n")] = '\0';  // Remove newline
 
@@ -358,23 +320,25 @@ void singin() {
         fgets(password_login, sizeof(password_login), stdin);
         password_login[strcspn(password_login, "\n")] = '\0';  // Remove newline
 
+        trouve = 0;  // Reset trouve for each attempt
+
         for (int i = 0; i < clients_count; i++) {
             if (strcmp(username_login, clients[i].username) == 0 && strcmp(password_login, clients[i].password) == 0) {
                 printf("\nBienvenu %s.\n", clients[i].username);
                 trouve = 1;
 
-                if (strcmp(clients[i].role, "Administrateur") == 0) {
+                // Call the corresponding menu based on the role
+                if (strcmp(clients[i].role, "admin") == 0) {
                     menu_administration();
-                } else if (strcmp(clients[i].role, "Agent") == 0) {
+                } else if (strcmp(clients[i].role, "agent") == 0) {
                     menu_agent();
-                } else if (strcmp(clients[i].role, "Client") == 0) {
+                } else if (strcmp(clients[i].role, "client") == 0) {
                     menu_client();
                 } else {
                     printf("Role inconnu.\n");
                 }
 
-                // Exit the loop after successful login
-                return;
+                return;  // Exit the function after successful login
             }
         }
 
@@ -385,10 +349,10 @@ void singin() {
 
     } while (tentative < 3);
 
-   
+    // After 3 failed attempts
     if (tentative == 3) {
-        printf("\nEssayer apres 30 minutes.\n");
-        exit(0);  
+        printf("\nEssayer après 30 minutes.\n");
+        exit(0);  // Exit the program
     }
 }
 
