@@ -28,10 +28,9 @@ typedef struct {
     char category[50];
     char status[20];
     char date[20];   
-    //****************** */
     char client_username[50];
-    /******************** */
     time_t creation_time;
+     time_t resolution_time; 
 } Reclamations;
 
 Reclamations reclamations[size_max];
@@ -66,6 +65,7 @@ void rapport_de_jour();
 void unlock_compte();
 void supprimer_reclamation_24h();
 void afficher_reclamations_client(char client_username[50]);
+void calculer_temps_moyen_traitement();
 
 //**********************************************************
 
@@ -122,7 +122,7 @@ void menu_administration(){
         printf("\n####################################################");
         printf("\n#### Pour Afficher le Total de Reclamations : 9 ####");//done
         printf("\n#### Pour Afficher le Taux de Resolution    : 10 ###");//done
-        printf("\n#### Pour Calcule le Rapport d'Jour traitement: 11##");
+        printf("\n#### Pour Calcule Tempes de Traitement : 11       ##");//done
         printf("\n#### Pour Rapport de Jour : 12                     #");//done
         printf("\n####################################################");
         printf("\n###########     Pour Logout Click 0     ############");
@@ -161,7 +161,7 @@ void menu_administration(){
                 taux_resolution();
                 break;
             case 11:
-                //changement_role_utilisateur();
+                calculer_temps_moyen_traitement();
                 break;
             case 12:
                 rapport_de_jour();
@@ -181,22 +181,22 @@ void menu_signup_signin(){
     printf("\n########################################");
     printf("\n#####            WELLCOM           #####");
     printf("\n########################################");
-    printf("\n#### Pour SingUp Click 1          ######");
-    printf("\n#### Pour SingIn Click 2          ######");
+    printf("\n#### Pour SingUp Click 1          ######");//done
+    printf("\n#### Pour SingIn Click 2          ######");//done
     printf("\n#### Pour Quity Click 0           ######");
     printf("\n########################################");
     printf("\nVotre Choix : ");
     scanf("%d", &choix_menu_signin_signup);
     
 }
-void menu_client(char client_username[]){//done
+void menu_client(char client_username[]){
     do{
         printf("\n########################################");
         printf("\n#####           CLIENT             #####");
         printf("\n########################################");
-        printf("\n#### Pour Craer Une Reaclamation 1 #####");
-        printf("\n#### Pour Afficher Une Reaclamation 2 ##");
-        printf("\n#### Pour Supprimer Une Reaclamation 3 #");
+        printf("\n#### Pour Craer Une Reaclamation 1 #####");//done
+        printf("\n#### Pour Afficher Une Reaclamation 2 ##");//done
+        printf("\n#### Pour Supprimer Une Reaclamation 3 #");//done
         printf("\n#### Pour Logout Click 0          ######");
         printf("\n########################################");
         printf("\nVotre Choix : ");
@@ -227,12 +227,12 @@ void menu_agent(){//done
         printf("\n#############################################");
         printf("\n#########         AGENT           ###########");
         printf("\n#############################################");
-        printf("\n#### Pour Afficher Les Reclamation : 1 ######");
-        printf("\n#### Pour Supprimer Une Reclamation : 2 #####");
-        printf("\n#### Pour Modifier Status Reclamation : 3 ###");
-        printf("\n#### Pour ID Reclamtion Rechecher : 4 #######");
-        printf("\n#### Pour Rechecher Status Reclamtion : 5 ###");
-        printf("\n#### Pour Modifier Une Reclamation : 6 ######");
+        printf("\n#### Pour Afficher Les Reclamation : 1 ######");//done
+        printf("\n#### Pour Supprimer Une Reclamation : 2 #####");//done
+        printf("\n#### Pour Modifier Status Reclamation : 3 ###");//done
+        printf("\n#### Pour ID Reclamtion Rechecher : 4 #######");//done
+        printf("\n#### Pour Rechecher Status Reclamtion : 5 ###");//done
+        printf("\n#### Pour Modifier Une Reclamation : 6 ######");//done
         printf("\n#### Pour Logout Click 0          ###########");
         printf("\n#############################################");
         printf("\nVotre Choix : ");
@@ -513,7 +513,9 @@ void changement_statu(){
             }else if(statut_change==1){
                 strcpy(reclamations[i].status, "en attente");
             } else if(statut_change==2){
+                reclamations[i].resolution_time = time(NULL);
                 strcpy(reclamations[i].status, "resolu");
+
             }
             printf("Statut Bien Modifie.\n");
             return;
@@ -759,6 +761,25 @@ void afficher_reclamations_client(char client_username[]) {
 
     if (!found) {
         printf("Aucune reclamation trouvee pour ce client.\n");
+    }
+}
+void calculer_temps_moyen_traitement() {
+    double total_time = 0;
+    int resolved_count = 0;
+
+    for (int i = 0; i < reclamation_count; i++) {
+        if (strcmp(reclamations[i].status, "resolu") == 0) {
+            double processing_time = difftime(reclamations[i].resolution_time, reclamations[i].creation_time);
+            total_time += processing_time;
+            resolved_count++;
+        }
+    }
+
+    if (resolved_count > 0) {
+        double average_time = total_time / resolved_count;
+        printf("Le temps moyen de traitement des reclamations resolues est de %.2f min .\n", average_time/60);
+    } else {
+        printf("Aucune reclamation resolue pour calculer le temps moyen de traitement.\n");
     }
 }
 
