@@ -14,19 +14,21 @@ typedef struct {
     char password[50];
     char role[20];  // admin-agent-client for adminstrator
     int loginAttempts;  // 3 fois => stop
+    int locked;
+    time_t lock_time;
 } Clients;
 
 Clients clients[size_max];
+
 //reclamations
 typedef struct {
     int id;
     char motif[100];
     char description[255];
     char category[50];
-    char status[20];  // en cour-resolu-rejete
-    char date[20]; //il fau genere   
+    char status[20];
+    char date[20];   
     //char client[50];
-    int priority;     // 1: basse, 2: moyenne, 3: haute
     //time_t creation_time;
 } Reclamations;
 
@@ -60,6 +62,7 @@ int definir_priorite(char description[]);
 void afficher_reclamations_par_priorite();
 void taux_resolution();
 void rapport_de_jour();
+void unlock_compte();
 //**********************************************************
 
 
@@ -296,61 +299,134 @@ void singup(){
     }while(!validation_password(password,noveauclient.username));
     strcpy(noveauclient.password,password);
     strcpy(noveauclient.role,"client");
-    //noveauclient.loginAttempts=0;
+    noveauclient.loginAttempts=0;
+    noveauclient.locked=0;
     clients[clients_count++]=noveauclient;
     printf("\nVotre Compte a ete Cree avec succes.\n");
 }
-void singin() {
+void unlock_compte(){
+    time_t current_time = time(NULL);
+    for(int i = 0; i < clients_count; i++){
+        if(clients[i].locked){
+            if (difftime(current_time, clients[i].lock_time) >= 1800){ // 30 min  
+                clients[i].locked = 0; 
+                clients[i].loginAttempts = 0; 
+                printf("Le compte de %s a ete debloque.\n", clients[i].username);
+            }
+        }
+    }
+}
+void singin(){
     char username_login[50], password_login[50];
     int tentative = 0, trouve = 0;
-
+    unlock_compte();
     do {
-        
         int c;
-        while ((c = getchar()) != '\n' && c != EOF); // Flush input buffer before taking the first input
+        while ((c = getchar()) != '\n' && c != EOF); 
         printf("\nMerci de Saisir votre username : ");
         fgets(username_login, sizeof(username_login), stdin);
-        username_login[strcspn(username_login, "\n")] = '\0';  // Remove newline
-
+        username_login[strcspn(username_login, "\n")] = '\0';  
         printf("\nMerci de Saisir votre password : ");
         fgets(password_login, sizeof(password_login), stdin);
-        password_login[strcspn(password_login, "\n")] = '\0';  // Remove newline
-
-        trouve = 0;  // Reset trouve for each attempt
+        password_login[strcspn(password_login, "\n")] = '\0';  
 
         for (int i = 0; i < clients_count; i++) {
-            if (strcmp(username_login, clients[i].username) == 0 && strcmp(password_login, clients[i].password) == 0) {
-                printf("\nBienvenu %s.\n", clients[i].username);
-                trouve = 1;
-
-                // Call the corresponding menu based on the role
-                if (strcmp(clients[i].role, "admin") == 0) {
-                    menu_administration();
-                } else if (strcmp(clients[i].role, "agent") == 0) {
-                    menu_agent();
-                } else if (strcmp(clients[i].role, "client") == 0) {
-                    menu_client();
-                } else {
-                    printf("Role inconnu.\n");
+            if (strcmp(username_login, clients[i].username) == 0) {
+                
+                if (clients[i].locked) {
+                    printf("Votre compte est verrouille. Veuillez ressayer dans 30 minutes.\n");
+                    return; 
                 }
 
-                return;  // Exit the function after successful login
+                // Check password
+                if(strcmp(password_login, clients[i].password) == 0) {
+                    printf("\nBienvenu %s.\n", clients[i].username);
+                    clients[i].loginAttempts = 0;
+
+                    if (strcmp(clients[i].role, "admin") == 0){
+                        menu_administration();
+                    } else if (strcmp(clients[i].role, "agent") == 0){
+                        menu_agent();
+                    } else if (strcmp(clients[i].role, "client") == 0){
+                        menu_client();
+                    } else {
+                        printf("Role inconnu.\n");
+                    }
+
+                    return; 
+                }else{
+                    tentative++;
+                    clients[i].loginAttempts++;
+                    printf("\nIdentifiants incorrects. Tentative %d/3.\n", tentative);
+
+                    // Lock account after 3 failed attempts
+                    if(clients[i].loginAttempts == 3){
+                        clients[i].locked = 1;
+                        clients[i].lock_time = time(NULL);
+                        printf("\nVotre compte est bloque pour 30 minutes.\n");
+                    }
+                }
+    
             }
         }
 
-        if (trouve == 0) {
-            tentative++;
-            printf("\nIdentifiants incorrects. Tentative %d/3.\n", tentative);
-        }
 
     } while (tentative < 3);
 
-    // After 3 failed attempts
-    if (tentative == 3) {
-        printf("\nEssayer apres 30 minutes.\n");
-        exit(0);  // Exit the program
-    }
 }
+
+/********************************************************************************************************* */
+// void singin() {
+//     char username_login[50], password_login[50];
+//     int tentative = 0, trouve = 0;
+
+//     do {
+        
+//         int c;
+//         while ((c = getchar()) != '\n' && c != EOF); // Flush input buffer before taking the first input
+//         printf("\nMerci de Saisir votre username : ");
+//         fgets(username_login, sizeof(username_login), stdin);
+//         username_login[strcspn(username_login, "\n")] = '\0';  // Remove newline
+
+//         printf("\nMerci de Saisir votre password : ");
+//         fgets(password_login, sizeof(password_login), stdin);
+//         password_login[strcspn(password_login, "\n")] = '\0';  // Remove newline
+
+//         trouve = 0;  // Reset trouve for each attempt
+
+//         for (int i = 0; i < clients_count; i++) {
+//             if (strcmp(username_login, clients[i].username) == 0 && strcmp(password_login, clients[i].password) == 0) {
+//                 printf("\nBienvenu %s.\n", clients[i].username);
+//                 trouve = 1;
+
+//                 // Call the corresponding menu based on the role
+//                 if (strcmp(clients[i].role, "admin") == 0) {
+//                     menu_administration();
+//                 } else if (strcmp(clients[i].role, "agent") == 0) {
+//                     menu_agent();
+//                 } else if (strcmp(clients[i].role, "client") == 0) {
+//                     menu_client();
+//                 } else {
+//                     printf("Role inconnu.\n");
+//                 }
+
+//                 return;  // Exit the function after successful login
+//             }
+//         }
+
+//         if (trouve == 0) {
+//             tentative++;
+//             printf("\nIdentifiants incorrects. Tentative %d/3.\n", tentative);
+//         }
+
+//     } while (tentative < 3);
+
+//     // After 3 failed attempts
+//     if (tentative == 3) {
+//         printf("\nVotre compte est bloque pour 30 minutes.\n");
+//         exit(0);  // Exit the program
+//     }
+// }
 void ajouter_reclamation() {
     Reclamations noveau_reclamation;
     //noveau_reclamation.creation_time = time(NULL);
@@ -666,7 +742,6 @@ void rapport_de_jour(){
     printf("Nombre total de nouvelles reclamations : %d\n", nombre_en_coures);
     printf("=== Fin du rapport ===\n");
 }
-
 
 
 
