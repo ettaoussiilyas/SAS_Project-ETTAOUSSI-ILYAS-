@@ -68,8 +68,9 @@ void supprimer_reclamation_24h();
 
 
 int main(){
+    
     super_clients();
-    super_reclamations();
+
     do{
         menu_signup_signin();
         switch (choix_menu_signin_signup)
@@ -271,13 +272,26 @@ int validation_password(char password[], char username[]) {
 
     int is_majiscule = 0, is_miniscule = 0, is_num = 0, is_special = 0;
     
-    if (strlen(password) < 8) return 0;
-
+    if (strlen(password) < 8){
+        printf("le mot de passe doit contenir au moins 8 caracteres !!");
+        return 0;
+    }
     for (int i = 0; i < strlen(password); i++) {
         if (isupper(password[i])) is_majiscule = 1;
         if (islower(password[i])) is_miniscule = 1;
         if (isdigit(password[i])) is_num = 1;
         if (strchr("!@#$^&*", password[i])) is_special = 1;
+    }
+    if (strstr(password, username) != NULL) {
+        printf("le mot pass il faut pas matcher avec le nome de utilisateur !!");
+        return 0;
+    }
+
+    for (int i = 0; i < clients_count; i++) {
+        if (strcmp(clients[i].username, username) == 0) {
+            printf("le nome d'utilisateur deja existe !");
+            return 0; 
+        }
     }
 
     if (is_majiscule && is_miniscule && is_num && is_special && strstr(password, username) == NULL){
@@ -290,14 +304,19 @@ int validation_password(char password[], char username[]) {
 void singup(){
     Clients noveauclient;
     char password[100];
-    printf("\nVeuillez saisir votre username : ");
-    getchar();
-    fgets(noveauclient.username, sizeof(noveauclient.username),stdin);
-    noveauclient.username[strcspn(noveauclient.username, "\n")] = '\0';
+    // printf("\nVeuillez saisir votre username : ");
+    // getchar();
+    // fgets(noveauclient.username, sizeof(noveauclient.username),stdin);
+    // noveauclient.username[strcspn(noveauclient.username, "\n")] = '\0';
     do{
+        printf("\nVeuillez saisir votre username : ");
+        getchar();
+        fgets(noveauclient.username, sizeof(noveauclient.username),stdin);
+        noveauclient.username[strcspn(noveauclient.username, "\n")] = '\0';
         printf("\nMerci de Saisir un Password Contien 8 Charcter [Majuscule,is_miniscule,Nombres,Symbol :!@#$^&*]: ");
         scanf("%s", password);
     }while(!validation_password(password,noveauclient.username));
+    //strcmp(noveauclient.username,noveauclient.username);
     strcpy(noveauclient.password,password);
     strcpy(noveauclient.role,"client");
     noveauclient.loginAttempts=0;
@@ -329,17 +348,16 @@ void singin(){
         username_login[strcspn(username_login, "\n")] = '\0';  
         printf("\nMerci de Saisir votre password : ");
         fgets(password_login, sizeof(password_login), stdin);
-        password_login[strcspn(password_login, "\n")] = '\0';  
+        password_login[strcspn(password_login, "\n")] = '\0';
 
-        for (int i = 0; i < clients_count; i++) {
-            if (strcmp(username_login, clients[i].username) == 0) {
+        for(int i = 0; i < clients_count; i++){
+            if(strcmp(username_login, clients[i].username) == 0){
                 
                 if (clients[i].locked) {
                     printf("Votre compte encore verrouille. Ressayer dans 30 minutes.\n");
                     return; 
                 }
 
-                // Check password
                 if(strcmp(password_login, clients[i].password) == 0) {
                     printf("\nBienvenu %s.\n", clients[i].username);
                     clients[i].loginAttempts = 0;
@@ -360,7 +378,6 @@ void singin(){
                     clients[i].loginAttempts++;
                     printf("\nIdentifiants incorrects. Tentative %d/3.\n", tentative);
 
-                    // Lock account after 3 failed attempts
                     if(clients[i].loginAttempts == 3){
                         clients[i].locked = 1;
                         clients[i].lock_time = time(NULL);
@@ -379,7 +396,7 @@ void ajouter_reclamation() {
     Reclamations noveau_reclamation;
     noveau_reclamation.creation_time = time(NULL);
     noveau_reclamation.id = reclamation_count+1;
-    noveau_reclamation.date[11]; 
+    noveau_reclamation.date[11];
     get_current_date(noveau_reclamation.date);
     printf("Saisir la Description : ");
     getchar();
@@ -427,7 +444,7 @@ void afficher_reclamation() {
         return;
     }
 
-    for (int i = 0; i < reclamation_count; i++) {
+    for (int i = 1; i < reclamation_count; i++) {
         if (reclamations[i].id == id_search) {
             printf("\nID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatut: %s\nDate: %s\n\n",
                    reclamations[i].id, reclamations[i].motif, reclamations[i].description,
@@ -480,34 +497,7 @@ void super_clients(){//test
     clients[3].loginAttempts = 0;
     clients[3].locked = 0;
 
-    clients_count = 4;
-}
-void super_reclamations(){//test
-    reclamations[0].id = 1;
-    strcpy(reclamations[0].motif, "produit problem");
-    strcpy(reclamations[0].description, "le produit ne travailler pas");
-    strcpy(reclamations[0].category, "produit");
-    strcpy(reclamations[0].status, "en cours");
-    strcpy(reclamations[0].date, "2024-09-20");
-    reclamations[0].creation_time = time(NULL) - 15;  // creer 30 s avant
-
-    reclamations[1].id = 2;
-    strcpy(reclamations[1].motif, "livraison");
-    strcpy(reclamations[1].description, "urgent la laivraison depasser 15j est cc'est urgent");
-    strcpy(reclamations[1].category, "logistique");
-    strcpy(reclamations[1].status, "resolu");
-    strcpy(reclamations[1].date, "2024-09-19");
-    reclamations[1].creation_time = time(NULL) - 86400;  //  creer 1jour avant
-
-    reclamations[2].id = 3;
-    strcpy(reclamations[2].motif, "livraison");
-    strcpy(reclamations[2].description, "important pour le traiter avant le 15 october.");
-    strcpy(reclamations[2].category, "logistique");
-    strcpy(reclamations[2].status, "en attente");
-    strcpy(reclamations[2].date, "2024-09-19");
-    reclamations[2].creation_time = time(NULL) - 120;  //creer 60s avant
-
-    reclamation_count = 3;  
+    clients_count += 4;
 }
 void afficher_tout_reclamations(){//admin-agent
     int trouver = 0;
@@ -619,15 +609,14 @@ void changement_role_utilisateur(){
     char username_search[50];
     printf("Saisir le Nome d'utilisateur : ");
     scanf("%s", username_search);
-    // getchar();
-    // fgets(username_search, sizeof(username_search), stdin);
+    //fgets(username_search, sizeof(username_search), stdin);
+    //username_search[strcspn(username_search, "\n")] = '\0';
     for (int i = 0; i < clients_count; i++) {
-        if(strcmp(clients[i].username, username_search) == 0) {
+        if(strcmp(clients[i].username, username_search) == 0){
             int role_choice;
             printf("Saisir le Nouveau Role [Administrateur: 0, Agent: 1, Client: 2]: ");
             scanf("%d", &role_choice);
 
-            // Assign the role based on the choice using a switch statement
             switch (role_choice) {
                 case 0:
                     strcpy(clients[i].role, "admin");
