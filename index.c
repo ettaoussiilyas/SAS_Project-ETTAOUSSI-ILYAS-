@@ -30,7 +30,7 @@ typedef struct {
     char date[20];   
     char client_username[50];
     time_t creation_time;
-     time_t resolution_time; 
+    time_t resolution_time; 
 } Reclamations;
 
 Reclamations reclamations[size_max];
@@ -63,7 +63,7 @@ void afficher_reclamations_par_priorite();
 void taux_resolution();
 void rapport_de_jour();
 void unlock_compte();
-void supprimer_reclamation_24h();
+void supprimer_reclamation_24h(char client_username[]);
 void afficher_reclamations_client(char client_username[50]);
 void calculer_temps_moyen_traitement();
 
@@ -239,11 +239,10 @@ void menu_client(char client_username[]){
             ajouter_reclamation(client_username);
             break;
         case 2:
-            //afficher_reclamation();
             afficher_reclamations_client(client_username);
             break;
         case 3:
-            supprimer_reclamation_24h();
+            supprimer_reclamation_24h(client_username);
             break;
         case 0:
             printf("Merci, a La Prochaine.");
@@ -433,18 +432,18 @@ void singin(){
         }
     } while (tentative < 3);
 }
-void supprimer_reclamation_24h(){
+void supprimer_reclamation_24h(char client_username[]){
     int id_supprimer;
     printf("Enter ID of reclamation to delete: ");
     scanf("%d", &id_supprimer);
 
     for(int i = 0; i < reclamation_count; i++){
-        if(reclamations[i].id == id_supprimer){
+        if(reclamations[i].id == id_supprimer && strcmp(reclamations[i].client_username,client_username)==0){
             time_t current_time = time(NULL);
             double check_def_time = difftime(current_time, reclamations[i].creation_time);
 
             
-            if(check_def_time > 60){
+            if(check_def_time > 70){
                 printf("Impossible de supprimer la reclamation. Elle depasse 24H.\n");// (86400 s)
                 return;
             }
@@ -770,7 +769,7 @@ void rapport_de_jour(){
     printf("Nombre total de nouvelles reclamations : %d\n", nombre_en_coures);
     printf("=== Fin du rapport ===\n");
 }
-void ajouter_reclamation(char client_username[]) {
+void ajouter_reclamation(char client_username[]){
     Reclamations nouveau_reclamation;
     nouveau_reclamation.creation_time = time(NULL);
     nouveau_reclamation.id = reclamation_count + 1;
@@ -790,7 +789,7 @@ void ajouter_reclamation(char client_username[]) {
 
     printf("\nReclamation Bien Enregistree ID %d.\n", nouveau_reclamation.id);
 }
-void afficher_reclamations_client(char client_username[]) {
+void afficher_reclamations_client(char client_username[]){
     int found = 0;
     printf("\nReclamations de %s :\n", client_username);
     for (int i = 0; i < reclamation_count; i++) {
