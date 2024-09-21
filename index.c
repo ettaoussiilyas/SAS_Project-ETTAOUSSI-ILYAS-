@@ -28,22 +28,23 @@ typedef struct {
     char category[50];
     char status[20];
     char date[20];   
-    //char client[50];
+    //****************** */
+    char client_username[50];
+    /******************** */
     time_t creation_time;
 } Reclamations;
 
-
-
 Reclamations reclamations[size_max];
 
-int choix_menu_signin_signup,choix_menu_administration,choix_menu_client,choix_menu_agent;
 int clients_count = 0;
 int reclamation_count = 0;
+
+int choix_menu_signin_signup,choix_menu_administration,choix_menu_client,choix_menu_agent;
 
 // prototypes
 void menu_administration();
 void menu_signup_signin();
-void menu_client();
+void menu_client(char client_username[]);
 void menu_agent();
 int validation_password(char password[] , char username[]);
 void singup();
@@ -64,11 +65,13 @@ void taux_resolution();
 void rapport_de_jour();
 void unlock_compte();
 void supprimer_reclamation_24h();
+void afficher_reclamations_client(char client_username[50]);
+
 //**********************************************************
 
 
 int main(){
-    
+
     super_clients();
 
     do{
@@ -99,7 +102,7 @@ int main(){
 }
 
 //**********************************************************
-//menus connection
+
 void menu_administration(){
 
     do{
@@ -186,8 +189,7 @@ void menu_signup_signin(){
     scanf("%d", &choix_menu_signin_signup);
     
 }
-void menu_client(){//done
-
+void menu_client(char client_username[]){//done
     do{
         printf("\n########################################");
         printf("\n#####           CLIENT             #####");
@@ -201,10 +203,11 @@ void menu_client(){//done
         scanf("%d", &choix_menu_client);
         switch(choix_menu_client){
         case 1:
-            ajouter_reclamation();
+            ajouter_reclamation(client_username);
             break;
         case 2:
-            afficher_reclamation();
+            //afficher_reclamation();
+            afficher_reclamations_client(client_username);
             break;
         case 3:
             supprimer_reclamation_24h();
@@ -349,7 +352,6 @@ void singin(){
         printf("\nMerci de Saisir votre password : ");
         fgets(password_login, sizeof(password_login), stdin);
         password_login[strcspn(password_login, "\n")] = '\0';
-
         for(int i = 0; i < clients_count; i++){
             if(strcmp(username_login, clients[i].username) == 0){
                 
@@ -357,17 +359,15 @@ void singin(){
                     printf("Votre compte encore verrouille. Ressayer dans 30 minutes.\n");
                     return; 
                 }
-
                 if(strcmp(password_login, clients[i].password) == 0) {
                     printf("\nBienvenu %s.\n", clients[i].username);
                     clients[i].loginAttempts = 0;
-
                     if (strcmp(clients[i].role, "admin") == 0){
                         menu_administration();
                     } else if (strcmp(clients[i].role, "agent") == 0){
                         menu_agent();
                     } else if (strcmp(clients[i].role, "client") == 0){
-                        menu_client();
+                        menu_client(clients[i].username);
                     } else {
                         printf("Role inconnu.\n");
                     }
@@ -387,27 +387,7 @@ void singin(){
     
             }
         }
-
-
     } while (tentative < 3);
-
-}
-void ajouter_reclamation() {
-    Reclamations noveau_reclamation;
-    noveau_reclamation.creation_time = time(NULL);
-    noveau_reclamation.id = reclamation_count+1;
-    noveau_reclamation.date[11];
-    get_current_date(noveau_reclamation.date);
-    printf("Saisir la Description : ");
-    getchar();
-    fgets(noveau_reclamation.description, sizeof(noveau_reclamation.description), stdin);
-    printf("Saisir le Motif : ");
-    fgets(noveau_reclamation.motif, sizeof(noveau_reclamation.motif), stdin);
-    printf("Saisir la Categorie : ");
-    fgets(noveau_reclamation.category, sizeof(noveau_reclamation.category), stdin);
-    strcpy(noveau_reclamation.status, "en cours");
-    reclamations[reclamation_count++] = noveau_reclamation;    
-    printf("\nReclamation Bien Enregester ID %d.\n", noveau_reclamation.id);   
 }
 void supprimer_reclamation_24h(){
     int id_supprimer;
@@ -444,8 +424,9 @@ void afficher_reclamation() {
         return;
     }
 
-    for (int i = 1; i < reclamation_count; i++) {
-        if (reclamations[i].id == id_search) {
+    for(int i = 0; i < reclamation_count; i++){
+        if(reclamations[i].id == id_search){
+            printf("\n#################");
             printf("\nID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatut: %s\nDate: %s\n\n",
                    reclamations[i].id, reclamations[i].motif, reclamations[i].description,
                    reclamations[i].category, reclamations[i].status, reclamations[i].date);
@@ -508,8 +489,8 @@ void afficher_tout_reclamations(){//admin-agent
     }
     for (int i = 0; i < reclamation_count; i++) {
 
-        printf("\n###############\n");
-        printf("ID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatut: %s\nDate: %s\n\n",
+        printf("\n###############");
+        printf("\nID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatut: %s\nDate: %s\n\n",
         reclamations[i].id, reclamations[i].motif, reclamations[i].description,
         reclamations[i].category, reclamations[i].status, reclamations[i].date);
         trouver = 1;
@@ -743,7 +724,43 @@ void rapport_de_jour(){
     printf("Nombre total de nouvelles reclamations : %d\n", nombre_en_coures);
     printf("=== Fin du rapport ===\n");
 }
+void ajouter_reclamation(char client_username[]) {
+    Reclamations nouveau_reclamation;
+    nouveau_reclamation.creation_time = time(NULL);
+    nouveau_reclamation.id = reclamation_count + 1;
+    get_current_date(nouveau_reclamation.date);  
+    printf("\nSaisir la Description : ");
+    getchar();
+    fgets(nouveau_reclamation.description, sizeof(nouveau_reclamation.description), stdin);
+    printf("\nSaisir le Motif : ");
+    fgets(nouveau_reclamation.motif, sizeof(nouveau_reclamation.motif), stdin);
+    printf("\nSaisir la Categorie : ");
+    fgets(nouveau_reclamation.category, sizeof(nouveau_reclamation.category), stdin);
 
+    strcpy(nouveau_reclamation.status, "en cours"); 
+    strcpy(nouveau_reclamation.client_username, client_username);
+
+    reclamations[reclamation_count++] = nouveau_reclamation;
+
+    printf("\nReclamation Bien Enregistree ID %d.\n", nouveau_reclamation.id);
+}
+void afficher_reclamations_client(char client_username[]) {
+    int found = 0;
+    printf("\nReclamations de %s :\n", client_username);
+    for (int i = 0; i < reclamation_count; i++) {
+        if (strcmp(reclamations[i].client_username, client_username) == 0) {
+            printf("\n##################");
+            printf("ID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatus: %s\nDate: %s\n",
+                   reclamations[i].id, reclamations[i].motif, reclamations[i].description,
+                   reclamations[i].category, reclamations[i].status, reclamations[i].date);
+            found = 1;
+        }
+    }
+
+    if (!found) {
+        printf("Aucune reclamation trouvee pour ce client.\n");
+    }
+}
 
 
 
