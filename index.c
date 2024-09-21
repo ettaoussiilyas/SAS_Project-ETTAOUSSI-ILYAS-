@@ -29,7 +29,7 @@ typedef struct {
     char status[20];
     char date[20];   
     //char client[50];
-    //time_t creation_time;
+    time_t creation_time;
 } Reclamations;
 
 
@@ -51,8 +51,8 @@ void singin();
 void ajouter_reclamation();
 void afficher_reclamation();
 void supprimer_reclamation();
-void super_admin();
-void super_agent();
+void super_clients();
+void super_reclamations();
 void afficher_tout_reclamations();
 void changement_statu();
 void recherche_par_status();
@@ -63,12 +63,13 @@ void afficher_reclamations_par_priorite();
 void taux_resolution();
 void rapport_de_jour();
 void unlock_compte();
+void supprimer_reclamation_24h();
 //**********************************************************
 
 
 int main(){
-    super_admin();
-    super_agent();
+    super_clients();
+    super_reclamations();
     do{
         menu_signup_signin();
         switch (choix_menu_signin_signup)
@@ -205,7 +206,7 @@ void menu_client(){//done
             afficher_reclamation();
             break;
         case 3:
-            supprimer_reclamation();
+            supprimer_reclamation_24h();
             break;
         case 0:
             printf("Merci, a La Prochaine.");
@@ -308,7 +309,7 @@ void unlock_compte(){
     time_t current_time = time(NULL);
     for(int i = 0; i < clients_count; i++){
         if(clients[i].locked){
-            if (difftime(current_time, clients[i].lock_time) >= 1800){ // 30 min  
+            if (difftime(current_time, clients[i].lock_time) >= 60){ // 30 min  
                 clients[i].locked = 0; 
                 clients[i].loginAttempts = 0; 
                 printf("Le compte de %s a ete debloque.\n", clients[i].username);
@@ -334,7 +335,7 @@ void singin(){
             if (strcmp(username_login, clients[i].username) == 0) {
                 
                 if (clients[i].locked) {
-                    printf("Votre compte est verrouille. Veuillez ressayer dans 30 minutes.\n");
+                    printf("Votre compte encore verrouille. Ressayer dans 30 minutes.\n");
                     return; 
                 }
 
@@ -363,7 +364,7 @@ void singin(){
                     if(clients[i].loginAttempts == 3){
                         clients[i].locked = 1;
                         clients[i].lock_time = time(NULL);
-                        printf("\nVotre compte est bloque pour 30 minutes.\n");
+                        printf("\nMantant votre compte est bloque pour 30 minutes.\n");
                     }
                 }
     
@@ -374,62 +375,9 @@ void singin(){
     } while (tentative < 3);
 
 }
-
-/********************************************************************************************************* */
-// void singin() {
-//     char username_login[50], password_login[50];
-//     int tentative = 0, trouve = 0;
-
-//     do {
-        
-//         int c;
-//         while ((c = getchar()) != '\n' && c != EOF); // Flush input buffer before taking the first input
-//         printf("\nMerci de Saisir votre username : ");
-//         fgets(username_login, sizeof(username_login), stdin);
-//         username_login[strcspn(username_login, "\n")] = '\0';  // Remove newline
-
-//         printf("\nMerci de Saisir votre password : ");
-//         fgets(password_login, sizeof(password_login), stdin);
-//         password_login[strcspn(password_login, "\n")] = '\0';  // Remove newline
-
-//         trouve = 0;  // Reset trouve for each attempt
-
-//         for (int i = 0; i < clients_count; i++) {
-//             if (strcmp(username_login, clients[i].username) == 0 && strcmp(password_login, clients[i].password) == 0) {
-//                 printf("\nBienvenu %s.\n", clients[i].username);
-//                 trouve = 1;
-
-//                 // Call the corresponding menu based on the role
-//                 if (strcmp(clients[i].role, "admin") == 0) {
-//                     menu_administration();
-//                 } else if (strcmp(clients[i].role, "agent") == 0) {
-//                     menu_agent();
-//                 } else if (strcmp(clients[i].role, "client") == 0) {
-//                     menu_client();
-//                 } else {
-//                     printf("Role inconnu.\n");
-//                 }
-
-//                 return;  // Exit the function after successful login
-//             }
-//         }
-
-//         if (trouve == 0) {
-//             tentative++;
-//             printf("\nIdentifiants incorrects. Tentative %d/3.\n", tentative);
-//         }
-
-//     } while (tentative < 3);
-
-//     // After 3 failed attempts
-//     if (tentative == 3) {
-//         printf("\nVotre compte est bloque pour 30 minutes.\n");
-//         exit(0);  // Exit the program
-//     }
-// }
 void ajouter_reclamation() {
     Reclamations noveau_reclamation;
-    //noveau_reclamation.creation_time = time(NULL);
+    noveau_reclamation.creation_time = time(NULL);
     noveau_reclamation.id = reclamation_count+1;
     noveau_reclamation.date[11]; 
     get_current_date(noveau_reclamation.date);
@@ -443,6 +391,32 @@ void ajouter_reclamation() {
     strcpy(noveau_reclamation.status, "en cours");
     reclamations[reclamation_count++] = noveau_reclamation;    
     printf("\nReclamation Bien Enregester ID %d.\n", noveau_reclamation.id);   
+}
+void supprimer_reclamation_24h(){
+    int id_supprimer;
+    printf("Enter ID of reclamation to delete: ");
+    scanf("%d", &id_supprimer);
+
+    for(int i = 0; i < reclamation_count; i++){
+        if(reclamations[i].id == id_supprimer){
+            time_t current_time = time(NULL);
+            double check_def_time = difftime(current_time, reclamations[i].creation_time);
+
+            
+            if(check_def_time > 60){
+                printf("Impossible de supprimer la reclamation. Elle depasse 24H.\n");// (86400 s)
+                return;
+            }
+
+            for (int j = i; j < reclamation_count - 1; j++) {
+                reclamations[j] = reclamations[j+1];
+            }
+            reclamation_count--;
+            printf("Reclamation Bien Supprimer.\n");
+            return;
+        }
+    }
+    printf("Reclamation ID non trouve.\n");
 }
 void afficher_reclamation() {
     int id_search;
@@ -481,21 +455,59 @@ void supprimer_reclamation(){//adimn - agent
     }
     printf("Id de Reclamation Pas Trouver.\n");
 }
-void super_admin(){
-    Clients admin;
-    strcpy(admin.username, "admin");
-    strcpy(admin.password, "AAaa11**");
-    strcpy(admin.role, "admin");
-    admin.loginAttempts = 0;
-    clients[clients_count++] = admin;
+void super_clients(){//test
+    strcpy(clients[0].username, "admin1");
+    strcpy(clients[0].password, "AdminPass1!");
+    strcpy(clients[0].role, "admin");
+    clients[0].loginAttempts = 0;
+    clients[0].locked = 0;
+
+    strcpy(clients[1].username, "agent1");
+    strcpy(clients[1].password, "AgentPass1!");
+    strcpy(clients[1].role, "agent");
+    clients[1].loginAttempts = 0;
+    clients[1].locked = 0;
+
+    strcpy(clients[2].username, "client1");
+    strcpy(clients[2].password, "ClientPass1!");
+    strcpy(clients[2].role, "client");
+    clients[2].loginAttempts = 0;
+    clients[2].locked = 0;
+
+    strcpy(clients[3].username, "client2");
+    strcpy(clients[3].password, "ClientPass2!");
+    strcpy(clients[3].role, "client");
+    clients[3].loginAttempts = 0;
+    clients[3].locked = 0;
+
+    clients_count = 4;
 }
-void super_agent(){
-    Clients agent;
-    strcpy(agent.username, "agent");
-    strcpy(agent.password, "AAaa00**");
-    strcpy(agent.role, "agent");
-    agent.loginAttempts = 0;
-    clients[clients_count++] = agent;
+void super_reclamations(){//test
+    reclamations[0].id = 1;
+    strcpy(reclamations[0].motif, "produit problem");
+    strcpy(reclamations[0].description, "le produit ne travailler pas");
+    strcpy(reclamations[0].category, "produit");
+    strcpy(reclamations[0].status, "en cours");
+    strcpy(reclamations[0].date, "2024-09-20");
+    reclamations[0].creation_time = time(NULL) - 15;  // creer 30 s avant
+
+    reclamations[1].id = 2;
+    strcpy(reclamations[1].motif, "livraison");
+    strcpy(reclamations[1].description, "urgent la laivraison depasser 15j est cc'est urgent");
+    strcpy(reclamations[1].category, "logistique");
+    strcpy(reclamations[1].status, "resolu");
+    strcpy(reclamations[1].date, "2024-09-19");
+    reclamations[1].creation_time = time(NULL) - 86400;  //  creer 1jour avant
+
+    reclamations[2].id = 3;
+    strcpy(reclamations[2].motif, "livraison");
+    strcpy(reclamations[2].description, "important pour le traiter avant le 15 october.");
+    strcpy(reclamations[2].category, "logistique");
+    strcpy(reclamations[2].status, "en attente");
+    strcpy(reclamations[2].date, "2024-09-19");
+    reclamations[2].creation_time = time(NULL) - 120;  //creer 60s avant
+
+    reclamation_count = 3;  
 }
 void afficher_tout_reclamations(){//admin-agent
     int trouver = 0;
