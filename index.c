@@ -127,8 +127,20 @@ void menu_administration(){
         printf("\n####################################################");
         printf("\n###########     Pour Logout Click 0     ############");
         printf("\n####################################################");
-        printf("\nVotre Choix : ");
-        scanf("%d", &choix_menu_administration);
+
+        char ch;
+        while (1) { 
+            printf("\n\nVotre Choix : ");
+            if (scanf("%d", &choix_menu_administration) != 1) {
+
+                printf("\nErreur: Merci d'entrer un nombre valide.\n");
+                while ((ch = getchar()) != '\n' && ch != EOF);  // flush the buffer
+
+            } else {
+                break;
+            }
+        }
+
         switch(choix_menu_administration){
             case 1:
                 afficher_tout_reclamations();
@@ -185,9 +197,19 @@ void menu_signup_signin(){
     printf("\n#### Pour SingIn Click 2          ######");//done
     printf("\n#### Pour Quity Click 0           ######");
     printf("\n########################################");
-    printf("\nVotre Choix : ");
-    scanf("%d", &choix_menu_signin_signup);
-    
+    char ch;
+    while (1) { 
+        printf("\n\nVotre Choix : ");
+        
+        if (scanf("%d", &choix_menu_signin_signup) != 1) {
+            printf("\nErreur: Merci d'entrer un nombre valide.\n");
+            
+            while ((ch = getchar()) != '\n' && ch != EOF);  // flush the buffer
+            
+        } else {
+            break;
+        }
+    }  
 }
 void menu_client(char client_username[]){
     do{
@@ -199,8 +221,19 @@ void menu_client(char client_username[]){
         printf("\n#### Pour Supprimer Une Reaclamation 3 #");//done
         printf("\n#### Pour Logout Click 0          ######");
         printf("\n########################################");
-        printf("\nVotre Choix : ");
-        scanf("%d", &choix_menu_client);
+
+        char ch;
+        while (1){ 
+            printf("\n\nVotre Choix : ");
+            if(scanf("%d", &choix_menu_client) != 1){
+
+                printf("\nErreur: Merci d'entrer un nombre valide.\n");
+                while ((ch = getchar()) != '\n' && ch != EOF);  // flush the buffer
+
+            }else{
+                break;
+            }
+        }
         switch(choix_menu_client){
         case 1:
             ajouter_reclamation(client_username);
@@ -235,8 +268,19 @@ void menu_agent(){//done
         printf("\n#### Pour Modifier Une Reclamation : 6 ######");//done
         printf("\n#### Pour Logout Click 0          ###########");
         printf("\n#############################################");
-        printf("\nVotre Choix : ");
-        scanf("%d", &choix_menu_agent);
+
+        char ch;
+        while (1){ 
+            printf("\n\nVotre Choix : ");
+            if(scanf("%d", &choix_menu_agent) != 1){
+
+                printf("\nErreur: Merci d'entrer un nombre valide.\n");
+                while ((ch = getchar()) != '\n' && ch != EOF);  // flush the buffer
+
+            }else{
+                break;
+            }
+        }
         switch(choix_menu_agent){
             case 1:
                 afficher_tout_reclamations();
@@ -482,11 +526,11 @@ void super_clients(){//test
 }
 void afficher_tout_reclamations(){//admin-agent
     int trouver = 0;
-    printf("\nVoila Tout Les Reclamations : \n");
     if (reclamation_count == 0) {
         printf("Aucune reclamation disponible.\n");
         return;
     }
+    printf("\nVoila Tout Les Reclamations : \n");
     for (int i = 0; i < reclamation_count; i++) {
 
         printf("\n###############");
