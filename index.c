@@ -378,54 +378,68 @@ void unlock_compte(){
         }
     }
 }
-void singin(){
+void singin() {
     char username_login[50], password_login[50];
     int tentative = 0, trouve = 0;
-    unlock_compte();
+    unlock_compte();  
+
     do {
         int c;
-        while ((c = getchar()) != '\n' && c != EOF); 
+        while ((c = getchar()) != '\n' && c != EOF);  
+
         printf("\nMerci de Saisir votre username : ");
-        fgets(username_login, sizeof(username_login), stdin);
-        username_login[strcspn(username_login, "\n")] = '\0';  
+        fgets(username_login,sizeof(username_login), stdin);
+        username_login[strcspn(username_login, "\n")] = '\0'; 
+
         printf("\nMerci de Saisir votre password : ");
-        fgets(password_login, sizeof(password_login), stdin);
-        password_login[strcspn(password_login, "\n")] = '\0';
-        for(int i = 0; i < clients_count; i++){
-            if(strcmp(username_login, clients[i].username) == 0){
-                
+        fgets(password_login,sizeof(password_login), stdin);
+        password_login[strcspn(password_login, "\n")] = '\0'; 
+
+        trouve = 0; 
+
+        for (int i = 0; i < clients_count; i++) {
+            if (strcmp(username_login, clients[i].username) == 0) {
+                trouve = 1;  
+
                 if (clients[i].locked) {
                     printf("\nVotre compte encore verrouille. Ressayer dans 30 minutes.\n");
                     return; 
                 }
-                if(strcmp(password_login, clients[i].password) == 0) {
+
+                if (strcmp(password_login, clients[i].password) == 0) {
                     printf("\nBienvenu %s.\n", clients[i].username);
-                    clients[i].loginAttempts = 0;
-                    if (strcmp(clients[i].role, "admin") == 0){
+                    clients[i].loginAttempts = 0; 
+
+                    if (strcmp(clients[i].role, "admin") == 0) {
                         menu_administration();
-                    } else if (strcmp(clients[i].role, "agent") == 0){
+                    } else if (strcmp(clients[i].role, "agent") == 0) {
                         menu_agent();
-                    } else if (strcmp(clients[i].role, "client") == 0){
+                    } else if (strcmp(clients[i].role, "client") == 0) {
                         menu_client(clients[i].username);
                     } else {
                         printf("\nRole inconnu.\n");
                     }
-
-                    return; 
-                }else{
+                    return;
+                } else {
                     tentative++;
                     clients[i].loginAttempts++;
                     printf("\nIdentifiants incorrects. Tentative %d/3.\n", tentative);
 
-                    if(clients[i].loginAttempts == 3){
+                    if (clients[i].loginAttempts == 3) {
                         clients[i].locked = 1;
                         clients[i].lock_time = time(NULL);
-                        printf("\nMantant votre compte est bloque pour 30 minutes.\n");
+                        printf("\nMaintenant votre compte est bloque pour 30 minutes.\n");
                     }
+                    break;
                 }
-    
             }
         }
+
+        if (!trouve) {
+            printf("\nNom d'utilisateur introuvable. Veuillez essayer.\n");
+            return; 
+        }
+
     } while (tentative < 3);
 }
 void supprimer_reclamation_24h(char client_username[]){
