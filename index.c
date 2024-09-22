@@ -37,7 +37,6 @@ Reclamations reclamations[size_max];
 
 int clients_count = 0;
 int reclamation_count = 0;
-
 int choix_menu_signin_signup,choix_menu_administration,choix_menu_client,choix_menu_agent;
 
 // prototypes
