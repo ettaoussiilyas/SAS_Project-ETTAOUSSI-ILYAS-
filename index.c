@@ -64,34 +64,33 @@ void supprimer_reclamation_24h(char client_username[]);
 void afficher_reclamations_client(char client_username[50]);
 void calculer_temps_moyen_traitement();
 
-//**********************************************************
+//*************************main****************************
 
 
 int main(){
 
-    super_clients();
+    super_clients();//clients definir 
 
     do{
         menu_signup_signin();
-        switch (choix_menu_signin_signup)
-        {
-        case 1:
-            singup();
-            break;
-        case 2:
-            singin();
-            break;
-        case 0:
-            printf("Merci , a La Prochaine .");
-            exit(0);
-            break;
-        
-        default:
-            printf("Merci de Saisir un Nombre Correct .");
-            break;
+        switch(choix_menu_signin_signup){
+            case 1:
+                singup();
+                break;
+            case 2:
+                singin();
+                break;
+            case 0:
+                printf("\nMerci , a La Prochaine .");
+                exit(0);
+                break;
+
+            default:
+                printf("\nMerci de Saisir un Nombre Correct .");
+                break;
         }
 
-    }while (choix_menu_signin_signup!=0);
+    }while(choix_menu_signin_signup!=0);
 
     
 
@@ -126,12 +125,12 @@ void menu_administration(){
         printf("\n####################################################");
 
         char ch;
-        while (1) { 
+        while (1){ //condition vrai donc loop exite quand l'utilisateur entry un nombre
             printf("\n\nVotre Choix : ");
-            if (scanf("%d", &choix_menu_administration) != 1) {
+            if (scanf("%d", &choix_menu_administration) != 1) {//le reteur de scanf c'est 1 donc quand le reteur deferent loop fonctioner
 
                 printf("\nErreur: Merci d'entrer un nombre valide.\n");
-                while ((ch = getchar()) != '\n' && ch != EOF);  // flush the buffer
+                while ((ch = getchar()) != '\n' && ch != EOF);  //vider la memoire temporaire
 
             } else {
                 break;
@@ -198,12 +197,12 @@ void menu_signup_signin(){
     while (1) { 
         printf("\n\nVotre Choix : ");
         
-        if (scanf("%d", &choix_menu_signin_signup) != 1) {
+        if(scanf("%d", &choix_menu_signin_signup) != 1){
             printf("\nErreur: Merci d'entrer un nombre valide.\n");
             
-            while ((ch = getchar()) != '\n' && ch != EOF);  // flush the buffer
-            
-        } else {
+            while ((ch = getchar()) != '\n' && ch != EOF);  
+            // vider la memoire temporaire de input jusqua ch defeent de neveau line ou la dernier input
+        }else{
             break;
         }
     }  
@@ -220,7 +219,7 @@ void menu_client(char client_username[]){
         printf("\n########################################");
 
         char ch;
-        while (1){ 
+        while(1){ 
             printf("\n\nVotre Choix : ");
             if(scanf("%d", &choix_menu_client) != 1){
 
@@ -233,7 +232,7 @@ void menu_client(char client_username[]){
         }
         switch(choix_menu_client){
         case 1:
-            ajouter_reclamation(client_username);
+            ajouter_reclamation(client_username);//username comme parameter pour utuliser 
             break;
         case 2:
             afficher_reclamations_client(client_username);
@@ -251,7 +250,7 @@ void menu_client(char client_username[]){
     }while(choix_menu_client!=0);
     
 }
-void menu_agent(){//done
+void menu_agent(){
     do{
         printf("\n#############################################");
         printf("\n#########         AGENT           ###########");
@@ -306,12 +305,12 @@ void menu_agent(){//done
         }
     }while (choix_menu_agent!=0);    
 }
-void get_current_date(char *date_str) {
-    time_t now = time(NULL);
-    struct tm *t = localtime(&now);
-    sprintf(date_str, "%d-%02d-%02d", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);
+void get_current_date(char *date_str){
+    time_t now = time(NULL);//1970 ,pour aprend le temp actulle
+    struct tm *t = localtime(&now);//pour stocker par la structure deja definer de tm dans le pointeur
+    sprintf(date_str, "%d-%02d-%02d", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);//pour stocker un chain structurer
 }
-int validation_password(char password[], char username[]) {
+int validation_password(char password[], char username[]){
 
     int is_majiscule = 0, is_miniscule = 0, is_num = 0, is_special = 0;
     
@@ -326,7 +325,7 @@ int validation_password(char password[], char username[]) {
         if (strchr("!@#$^&*", password[i])) is_special = 1;
     }
     if (strstr(password, username) != NULL) {
-        printf("\nLe mot pass il faut pas matcher avec le nome de utilisateur !!");
+        printf("\nLe mot pass il faut pas contien le nome de utilisateur !!");
         return 0;
     }
 
@@ -347,10 +346,7 @@ int validation_password(char password[], char username[]) {
 void singup(){
     Clients noveauclient;
     char password[100];
-    // printf("\nVeuillez saisir votre username : ");
-    // getchar();
-    // fgets(noveauclient.username, sizeof(noveauclient.username),stdin);
-    // noveauclient.username[strcspn(noveauclient.username, "\n")] = '\0';
+
     do{
         printf("\nVeuillez saisir votre username : ");
         getchar();
@@ -359,7 +355,7 @@ void singup(){
         printf("\nMerci de Saisir un Password Contien 8 Charcter [Majuscule,is_miniscule,Nombres,Symbol :!@#$^&*]: ");
         scanf("%s", password);
     }while(!validation_password(password,noveauclient.username));
-    //strcmp(noveauclient.username,noveauclient.username);
+    
     strcpy(noveauclient.password,password);
     strcpy(noveauclient.role,"client");
     noveauclient.loginAttempts=0;
@@ -378,7 +374,7 @@ void unlock_compte(){
         }
     }
 }
-void singin() {
+void singin(){
     char username_login[50], password_login[50];
     int tentative = 0, trouve = 0;
     unlock_compte();  
@@ -468,7 +464,7 @@ void supprimer_reclamation_24h(char client_username[]){
     }
     printf("\nAucun Reclamation avec ce Id.\n");
 }
-void afficher_reclamation() {
+void afficher_reclamation(){
     int id_search;
     printf("\nSaisir l'ID de la reclamation : ");
     scanf("%d", &id_search);
@@ -741,7 +737,7 @@ void rapport_de_jour(){
     for (int i = 0; i < reclamation_count; i++) {
         if (strcmp(reclamations[i].status, "resolu") == 0) {
             // Afficher les reclamations resolues
-            printf("\nID: %d, Motif: %s, Date Traitement: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
+            printf("\nID: %d, Motif: %s, Date Creation: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
             nombre_resolues++;
         }
     }
@@ -784,7 +780,7 @@ void ajouter_reclamation(char client_username[]){
     Reclamations nouveau_reclamation;
     nouveau_reclamation.creation_time = time(NULL);
     nouveau_reclamation.id = reclamation_count + 1;
-    get_current_date(nouveau_reclamation.date);  
+    get_current_date(nouveau_reclamation.date);//prond le dte pour le remplire avec la date actuelle
     printf("\nSaisir la Description : ");
     getchar();
     fgets(nouveau_reclamation.description, sizeof(nouveau_reclamation.description), stdin);
