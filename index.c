@@ -4,8 +4,6 @@
 #include <time.h>
 #include <ctype.h> //pour utuliser isupper islower ...
 
-//max number
-
 #define size_max 120
 
 //users
