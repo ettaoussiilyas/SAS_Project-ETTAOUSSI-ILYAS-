@@ -61,7 +61,7 @@ void taux_resolution();
 void rapport_de_jour();
 void unlock_compte();
 void supprimer_reclamation_24h(char client_username[]);
-void afficher_reclamations_client(char client_username[50]);
+void afficher_reclamations_client(char client_username[]);
 void calculer_temps_moyen_traitement();
 
 
@@ -762,11 +762,11 @@ void rapport_de_jour(){
     int nombre_en_coures = 0;
     int nombre_resolues = 0;
     int nombre_en_attente = 0;
-
-    printf("\n### Rapport Journalier des Reclamations ###\n");
+    printf("\n###########################################");
+    printf("\n### Rapport Journalier des Reclamations ###");
     printf("\n###########################################");
     
-    printf("\nReclamations Resolues Jusqua Maintenant :\n");
+    printf("\nReclamations Resolues Jusqua Maintenant :");
     printf("\n#########################################");
     for(int i = 0; i < reclamation_count; i++){
         if (strcmp(reclamations[i].status, "resolu") == 0) {
@@ -780,7 +780,7 @@ void rapport_de_jour(){
         printf("\nAucune reclamation resolue aujourd'hui.\n");
     }
    
-    printf("\nReclamations en Traitement aujourd'hui :\n");
+    printf("\nReclamations en Traitement aujourd'hui :");
     printf("\n########################################");
     for(int i = 0; i < reclamation_count; i++){
         if (strcmp(reclamations[i].status, "en attente") == 0) {
@@ -794,12 +794,12 @@ void rapport_de_jour(){
         printf("\nAucune reclamation en attente aujourd'hui.\n");
     }
 
-    printf("\nNouvelles reclamations en cours :\n");
+    printf("\nNouvelles reclamations en cours :");
     printf("\n#################################");
     for(int i = 0; i < reclamation_count; i++){
         if (strcmp(reclamations[i].status, "en cours") == 0) {
             // Afficher les nouvelles reclamations non encore traitees
-            printf("\nID: %d, Motif: %s || Date Soumission: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
+            printf("\nID: %d | Motif: %s || Date Soumission: %s\n", reclamations[i].id, reclamations[i].motif, reclamations[i].date);
             nombre_en_coures++;
         }
     }
@@ -810,7 +810,8 @@ void rapport_de_jour(){
     printf("\nNombre total de reclamations resolues : %d\n", nombre_resolues);
     printf("\nNombre total de reclamations en attente  : %d\n", nombre_en_attente);
     printf("\nNombre total de nouvelles reclamations : %d\n", nombre_en_coures);
-    printf("\n=== Fin du rapport ===\n");
+    printf("\n################### Fin du Rapport ###################");
+    printf("\n######################################################\n");
 }
 void ajouter_reclamation(char client_username[]){
     Reclamations nouveau_reclamation;
