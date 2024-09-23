@@ -232,13 +232,13 @@ void menu_client(char client_username[]){
         }
         switch(choix_menu_client){
         case 1:
-            ajouter_reclamation(client_username);//username comme parameter pour utuliser 
+            ajouter_reclamation(client_username);//noveau struct abject
             break;
         case 2:
-            afficher_reclamations_client(client_username);
+            afficher_reclamations_client(client_username);//rechrche par user name
             break;
         case 3:
-            supprimer_reclamation_24h(client_username);
+            supprimer_reclamation_24h(client_username);//deff de date creation et carrunte date
             break;
         case 0:
             printf("\nMerci, a La Prochaine.\n");
@@ -355,7 +355,7 @@ void singup(){
         printf("\nMerci de Saisir un Password Contien 8 Charcter [Majuscule,is_miniscule,Nombres,Symbol :!@#$^&*]: ");
         scanf("%s", password);
     }while(!validation_password(password,noveauclient.username));
-    
+
     strcpy(noveauclient.password,password);
     strcpy(noveauclient.role,"client");
     noveauclient.loginAttempts=0;
