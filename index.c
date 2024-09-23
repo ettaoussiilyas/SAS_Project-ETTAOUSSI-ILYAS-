@@ -64,13 +64,14 @@ void supprimer_reclamation_24h(char client_username[]);
 void afficher_reclamations_client(char client_username[50]);
 void calculer_temps_moyen_traitement();
 
-//*************************main****************************
+
+//*************************main****************************7
 
 
 int main(){
 
     super_clients();//clients definir 
-
+    super_reclamations();
     do{
         menu_signup_signin();
         switch(choix_menu_signin_signup){
@@ -194,7 +195,7 @@ void menu_signup_signin(){
     printf("\n#### Pour Quity Click 0           ######");
     printf("\n########################################");
     char ch;
-    while (1) { 
+    while(1){ 
         printf("\n\nVotre Choix : ");
         
         if(scanf("%d", &choix_menu_signin_signup) != 1){
@@ -270,7 +271,7 @@ void menu_agent(){
             if(scanf("%d", &choix_menu_agent) != 1){
 
                 printf("\nErreur: Merci d'entrer un nombre valide.\n");
-                while ((ch = getchar()) != '\n' && ch != EOF);  // flush the buffer
+                while ((ch = getchar()) != '\n' && ch != EOF);  // vider la memoire temporaire
 
             }else{
                 break;
@@ -305,12 +306,12 @@ void menu_agent(){
         }
     }while (choix_menu_agent!=0);    
 }
-void get_current_date(char *date_str){
+void get_current_date(char *date_str){//done
     time_t now = time(NULL);//1970 ,pour aprend le temp actulle
     struct tm *t = localtime(&now);//pour stocker par la structure deja definer de tm dans le pointeur
     sprintf(date_str, "%d-%02d-%02d", t->tm_year + 1900, t->tm_mon + 1, t->tm_mday);//pour stocker un chain structurer
 }
-int validation_password(char password[], char username[]){
+int validation_password(char password[], char username[]){//done
 
     int is_majiscule = 0, is_miniscule = 0, is_num = 0, is_special = 0;
     
@@ -318,7 +319,7 @@ int validation_password(char password[], char username[]){
         printf("\nle mot de passe doit contenir au moins 8 caracteres !!");
         return 0;
     }
-    for (int i = 0; i < strlen(password); i++) {
+    for (int i = 0; i < strlen(password); i++) {//ctype
         if (isupper(password[i])) is_majiscule = 1;
         if (islower(password[i])) is_miniscule = 1;
         if (isdigit(password[i])) is_num = 1;
@@ -369,15 +370,15 @@ void unlock_compte(){
         if(clients[i].locked){
             if (difftime(current_time, clients[i].lock_time) >= 60){ // 30 min  
                 clients[i].locked = 0; 
-                clients[i].loginAttempts = 0; 
+                clients[i].loginAttempts = 0;//re init
             }
         }
     }
 }
-void singin(){
+void singin(){//done
     char username_login[50], password_login[50];
     int tentative = 0, trouve = 0;
-    unlock_compte();  
+    unlock_compte();  //pour check
 
     do {
         int c;
@@ -385,43 +386,43 @@ void singin(){
 
         printf("\nMerci de Saisir votre username : ");
         fgets(username_login,sizeof(username_login), stdin);
-        username_login[strcspn(username_login, "\n")] = '\0'; 
-
+        username_login[strcspn(username_login, "\n")] = '\0';//check le dernier c'est noveau line et eviter le
+      
         printf("\nMerci de Saisir votre password : ");
         fgets(password_login,sizeof(password_login), stdin);
         password_login[strcspn(password_login, "\n")] = '\0'; 
 
         trouve = 0; 
 
-        for (int i = 0; i < clients_count; i++) {
-            if (strcmp(username_login, clients[i].username) == 0) {
-                trouve = 1;  
+        for(int i = 0; i < clients_count; i++){
+            if(strcmp(username_login, clients[i].username) == 0){
+                trouve = 1;
 
                 if (clients[i].locked) {
                     printf("\nVotre compte encore verrouille. Ressayer dans 30 minutes.\n");
                     return; 
                 }
 
-                if (strcmp(password_login, clients[i].password) == 0) {
-                    printf("\nBienvenu %s.\n", clients[i].username);
+                if(strcmp(password_login, clients[i].password) == 0){
+                    printf("\n\nBienvenu %s...\n", clients[i].username);
                     clients[i].loginAttempts = 0; 
 
-                    if (strcmp(clients[i].role, "admin") == 0) {
+                    if(strcmp(clients[i].role, "admin") == 0){
                         menu_administration();
-                    } else if (strcmp(clients[i].role, "agent") == 0) {
+                    }else if (strcmp(clients[i].role, "agent") == 0){
                         menu_agent();
-                    } else if (strcmp(clients[i].role, "client") == 0) {
+                    }else if (strcmp(clients[i].role, "client") == 0){
                         menu_client(clients[i].username);
-                    } else {
+                    }else {
                         printf("\nRole inconnu.\n");
                     }
                     return;
-                } else {
+                }else{
                     tentative++;
                     clients[i].loginAttempts++;
                     printf("\nIdentifiants incorrects. Tentative %d/3.\n", tentative);
 
-                    if (clients[i].loginAttempts == 3) {
+                    if(clients[i].loginAttempts == 3){
                         clients[i].locked = 1;
                         clients[i].lock_time = time(NULL);
                         printf("\nMaintenant votre compte est bloque pour 30 minutes.\n");
@@ -528,6 +529,38 @@ void super_clients(){//test
     clients[3].locked = 0;
 
     clients_count += 4;
+}
+void super_reclamations(){
+    if(reclamation_count == 0){
+        reclamations[0].id = 1;
+        strcpy(reclamations[0].motif, "Problem de Pyment");
+        strcpy(reclamations[0].description, "Le paiement pas ete effectue, mais l argent a ete pronee.");
+        strcpy(reclamations[0].category, "argent");
+        strcpy(reclamations[0].status, "en cours");
+        strcpy(reclamations[0].date, "2024-09-21");
+        strcpy(reclamations[0].client_username, "client1");
+        reclamations[0].creation_time = time(NULL);  // Current time
+
+        reclamations[1].id = 2;
+        strcpy(reclamations[1].motif, "compte blocker");
+        strcpy(reclamations[1].description, "urgent mon compte verrouille en raison de tentatives de mot de passe incorrectes.");
+        strcpy(reclamations[1].category, "Account");
+        strcpy(reclamations[1].status, "en cours");
+        strcpy(reclamations[1].date, "2024-09-20");
+        strcpy(reclamations[1].client_username, "client1");
+        reclamations[1].creation_time = time(NULL) - 3600;  // avant 1h
+
+        reclamations[2].id = 3;
+        strcpy(reclamations[2].motif, "probleme technique");
+        strcpy(reclamations[2].description, "Impossible d'acceder a certaines fonctionnalites de la plateforme mais c'est important.");
+        strcpy(reclamations[2].category, "technique");
+        strcpy(reclamations[2].status, "en cours");
+        strcpy(reclamations[2].date, "2024-09-19");
+        strcpy(reclamations[2].client_username, "client1");
+        reclamations[2].creation_time = time(NULL) - 86401;  //avant 24h+1s
+        reclamation_count = 3;
+    }
+    
 }
 void afficher_tout_reclamations(){//admin-agent
     int trouver = 0;
@@ -684,7 +717,7 @@ void afficher_reclamations_par_priorite(){
         printf("\nAucune reclamation disponible.\n");
         return;
     }
-    int indices[reclamation_count];  
+    int indices[reclamation_count];
     for (int i = 0; i < reclamation_count; i++){
         indices[i] = i;
     }
@@ -733,8 +766,9 @@ void rapport_de_jour(){
     printf("\n### Rapport Journalier des Reclamations ###\n");
     printf("\n###########################################");
     
-    printf("\nReclamations resolues aujourd'hui :\n");
-    for (int i = 0; i < reclamation_count; i++) {
+    printf("\nReclamations Resolues Jusqua Maintenant :\n");
+    printf("\n#########################################");
+    for(int i = 0; i < reclamation_count; i++){
         if (strcmp(reclamations[i].status, "resolu") == 0) {
             // Afficher les reclamations resolues
             printf("\nID: %d, Motif: %s, Date Creation: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
@@ -742,11 +776,12 @@ void rapport_de_jour(){
         }
     }
 
-    if (nombre_resolues == 0) {
+    if(nombre_resolues == 0){
         printf("\nAucune reclamation resolue aujourd'hui.\n");
     }
    
     printf("\nReclamations en Traitement aujourd'hui :\n");
+    printf("\n########################################");
     for(int i = 0; i < reclamation_count; i++){
         if (strcmp(reclamations[i].status, "en attente") == 0) {
             // Afficher les reclamations resolues
@@ -760,10 +795,11 @@ void rapport_de_jour(){
     }
 
     printf("\nNouvelles reclamations en cours :\n");
+    printf("\n#################################");
     for(int i = 0; i < reclamation_count; i++){
         if (strcmp(reclamations[i].status, "en cours") == 0) {
             // Afficher les nouvelles reclamations non encore traitees
-            printf("\nID: %d, Motif: %s, Date Soumission: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
+            printf("\nID: %d, Motif: %s || Date Soumission: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
             nombre_en_coures++;
         }
     }
