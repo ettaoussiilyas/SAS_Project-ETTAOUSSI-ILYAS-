@@ -441,11 +441,9 @@ void singin(){//done
 }
 void supprimer_reclamation_24h(char client_username[]){
     int id_supprimer;
-    // printf("\nEnter ID of reclamation to delete: ");
-    // scanf("%d", &id_supprimer);
     char ch;
     while(1){ 
-        printf("\n\nEnter ID of reclamation to Supprimer: ");
+        printf("\n\nEnter ID de reclamation pour Supprimer: ");
         if(scanf("%d", &id_supprimer) != 1){
             printf("\nErreur: Merci d'entrer un nombre valide.\n");
             while ((ch = getchar()) != '\n' && ch != EOF);  
@@ -506,8 +504,16 @@ void afficher_reclamation(){
 }
 void supprimer_reclamation(){//adimn - agent
     int id_supprimer;
-    printf("\nEnter ID of reclamation to delete: ");
-    scanf("%d", &id_supprimer);
+    char ch;
+    while(1){ 
+        printf("\n\nEnter ID de reclamation pour Supprimer: ");
+        if(scanf("%d", &id_supprimer) != 1){
+            printf("\nErreur: Merci d'entrer un nombre valide.\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);  
+        }else{
+            break;
+        }
+    }
 
     for (int i = 0; i < reclamation_count; i++) {
         if (reclamations[i].id == id_supprimer) {
@@ -601,10 +607,26 @@ void afficher_tout_reclamations(){//admin-agent
 }
 void changement_statu(){
     int id_search, statut_change;
-    printf("\nSaisir l'ID de la reclamation : ");
-    scanf("%d", &id_search);
-    printf("\nSaisir le nouveau statut [0: en cours, 1: en attente, 2: resolu]: ");
-    scanf("%d", &statut_change);
+    char ch;
+    while(1){ 
+        printf("\n\nEnter ID de reclamation pour Chenger le Status: ");
+        if(scanf("%d", &id_search) != 1){
+            printf("\nErreur: Merci d'entrer un nombre valide.\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);  
+        }else{
+            break;
+        }
+    }
+    char c;
+    while(1){ 
+        printf("\n\nSaisir le nouveau statut [0: en cours, 1: en attente, 2: resolu]: ");
+        if(scanf("%d", &statut_change) != 1){
+            printf("\nErreur: Merci d'entrer un nombre valide.\n");
+            while ((c = getchar()) != '\n' && c != EOF);  
+        }else{
+            break;
+        }
+    }
 
     for (int i = 0; i < reclamation_count; i++) {
         if (reclamations[i].id == id_search) {
@@ -629,8 +651,17 @@ void recherche_par_status(){
         return;
     }
     int statut_recherche;
-    printf("\nSaisir le statut recherche [0: en cours, 1: en attente, 2: resolu]: ");
-    scanf("%d", &statut_recherche);
+
+    char ch;
+    while(1){ 
+        printf("\n\nSaisir le statut recherche [0: en cours, 1: en attente, 2: resolu]: ");
+        if(scanf("%d", &statut_recherche) != 1){
+            printf("\nErreur: Merci d'entrer un nombre valide.\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);  
+        }else{
+            break;
+        }
+    }
     char statut_str[20];
     switch(statut_recherche) {
         case 0:
@@ -668,8 +699,16 @@ void modifier_reclamation(){
     }
     int id_recherche;
     int trouve=0;
-    printf("\nSaisir l'ID de la reclamation : ");
-    scanf("%d", &id_recherche);
+    char ch;
+    while(1){ 
+        printf("\n\nEnter ID de reclamation pour Modifier: ");
+        if(scanf("%d", &id_recherche) != 1){
+            printf("\nErreur: Merci d'entrer un nombre valide.\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);  
+        }else{
+            break;
+        }
+    }
     for (int i = 0; i < reclamation_count; i++) {
         if (reclamations[i].id == id_recherche) {
             printf("\nSaisir la nouvelle description : ");
@@ -697,10 +736,20 @@ void changement_role_utilisateur(){
     for (int i = 0; i < clients_count; i++) {
         if(strcmp(clients[i].username, username_search) == 0){
             int role_choice;
-            printf("\nSaisir le Nouveau Role [Administrateur: 0, Agent: 1, Client: 2]: ");
-            scanf("%d", &role_choice);
+            // printf("\nSaisir le Nouveau Role [Administrateur: 0, Agent: 1, Client: 2]: ");
+            // scanf("%d", &role_choice);
+            char ch;
+            while(1){ 
+                printf("\n\nSaisir le Nouveau Role [Administrateur: 0, Agent: 1, Client: 2]: ");
+                if(scanf("%d", &role_choice) != 1){
+                    printf("\nErreur: Merci d'entrer un nombre valide.\n");
+                    while ((ch = getchar()) != '\n' && ch != EOF);  
+                }else{
+                    break;
+                }
+            }
 
-            switch (role_choice) {
+            switch(role_choice){
                 case 0:
                     strcpy(clients[i].role, "admin");
                     break;
@@ -712,7 +761,7 @@ void changement_role_utilisateur(){
                     break;
                 default:
                     printf("\nChoix invalide. Veuillez entrer 0, 1 ou 2.\n");
-                    return;
+                    changement_role_utilisateur();
             }
 
             printf("\nLe role de l'utilisateur %s a ete bien modifie en %s.\n", username_search, clients[i].role);
@@ -723,11 +772,12 @@ void changement_role_utilisateur(){
     // If the user was not found
     printf("\nAucun Nome d'utilisateur Avec : %s !!\n", username_search);
 }
-int definir_priorite(char description[]) {
-    if (strstr(description, "urgent") || strstr(description, "critique"))
-        return 3;  
-    else if (strstr(description, "important") || strstr(description, "presse"))
+int definir_priorite(char description[]){
+    if(strstr(description, "urgent") || strstr(description, "critique")){
+        return 3; 
+    }else if(strstr(description, "important") || strstr(description, "presse")){
         return 2;
+    }
     return 1;  
 }
 void afficher_reclamations_par_priorite(){
@@ -736,12 +786,12 @@ void afficher_reclamations_par_priorite(){
         return;
     }
     int indices[reclamation_count];
-    for (int i = 0; i < reclamation_count; i++){
+    for(int i = 0; i < reclamation_count; i++){
         indices[i] = i;
     }
-    for (int i = 0; i < reclamation_count - 1; i++){
-        for (int j = 0; j < reclamation_count - i - 1; j++) {
-            if (definir_priorite(reclamations[indices[j]].description) < definir_priorite(reclamations[indices[j + 1]].description)) {
+    for(int i = 0; i < reclamation_count - 1; i++){
+        for(int j = 0; j < reclamation_count - i - 1; j++){
+            if(definir_priorite(reclamations[indices[j]].description) < definir_priorite(reclamations[indices[j + 1]].description)){
                 
                 int temp = indices[j];
                 indices[j] = indices[j + 1];
@@ -754,7 +804,7 @@ void afficher_reclamations_par_priorite(){
     printf("\nReclamations par Priorite :\n");
     for(int i = 0; i < reclamation_count; i++){
         int index = indices[i];
-        printf("\n###############\n");
+        printf("\n###############################\n");
         printf("ID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatut: %s\nDate: %s\nPriorite: %d\n\n",
                reclamations[index].id, reclamations[index].motif, reclamations[index].description,
                reclamations[index].category, reclamations[index].status, reclamations[index].date,
@@ -777,15 +827,14 @@ void taux_resolution(){
     printf("\nLe Taux de Resolution: %.2f%%\n", result); 
 }
 
-
-void rapport_de_jour() {
+void rapport_de_jour(){
     int nombre_en_coures = 0;
     int nombre_resolues = 0;
     int nombre_en_attente = 0;
     
     FILE *fichier = fopen("rapport_jour.txt", "w");
 
-    if (fichier == NULL) {
+    if(fichier == NULL){
         printf("Erreur lors de l'ouverture du fichier!\n");
         return;
     }
@@ -796,40 +845,40 @@ void rapport_de_jour() {
 
     fprintf(fichier, "\nReclamations Resolues Jusqua Maintenant :");
     fprintf(fichier, "\n#########################################\n");
-    for (int i = 0; i < reclamation_count; i++) {
-        if (strcmp(reclamations[i].status, "resolu") == 0) {
+    for(int i = 0; i < reclamation_count; i++){
+        if (strcmp(reclamations[i].status, "resolu") == 0){
             fprintf(fichier, "\nID: %d, Motif: %s, Date Creation: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
             nombre_resolues++;
         }
     }
 
-    if (nombre_resolues == 0) {
+    if(nombre_resolues == 0){
         fprintf(fichier, "\nAucune reclamation resolue aujourd'hui.\n");
     }
 
     fprintf(fichier, "\nReclamations en Traitement aujourd'hui :");
     fprintf(fichier, "\n########################################\n");
-    for (int i = 0; i < reclamation_count; i++) {
+    for(int i = 0; i < reclamation_count; i++) {
         if (strcmp(reclamations[i].status, "en attente") == 0) {
             fprintf(fichier, "\nID: %d, Motif: %s, Date Traitement: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
             nombre_en_attente++;
         }
     }
 
-    if (nombre_en_attente == 0) {
+    if(nombre_en_attente == 0){
         fprintf(fichier, "\nAucune reclamation en attente aujourd'hui.\n");
     }
 
     fprintf(fichier, "\nNouvelles reclamations en cours :");
     fprintf(fichier, "\n#################################\n");
-    for (int i = 0; i < reclamation_count; i++) {
+    for(int i = 0; i < reclamation_count; i++){
         if (strcmp(reclamations[i].status, "en cours") == 0) {
             fprintf(fichier, "\nID: %d | Motif: %s || Date : %s\n", reclamations[i].id, reclamations[i].motif, reclamations[i].date);
             nombre_en_coures++;
         }
     }
 
-    if (nombre_en_coures == 0) {
+    if(nombre_en_coures == 0){
         fprintf(fichier, "\nAucune en cours traiter reclamation aujourd'hui.\n");
     }
 
@@ -923,7 +972,7 @@ void afficher_reclamations_client(char client_username[]){
     printf("\nReclamations de %s :\n", client_username);
     for (int i = 0; i < reclamation_count; i++) {
         if (strcmp(reclamations[i].client_username, client_username) == 0) {
-            printf("\n##################");
+            printf("\n####################");
             printf("\nID: %d\nMotif: %s\nDescription: %s\nCategorie: %s\nStatus: %s\nDate: %s\n",
                    reclamations[i].id, reclamations[i].motif, reclamations[i].description,
                    reclamations[i].category, reclamations[i].status, reclamations[i].date);
@@ -932,7 +981,7 @@ void afficher_reclamations_client(char client_username[]){
     }
 
     if(!found){
-        printf("\nAucune reclamation trouvee pour ce client.\n");
+        printf("\nAucune reclamation trouvee pour %s.\n",client_username);
     }
 }
 void calculer_temps_moyen_traitement(){
