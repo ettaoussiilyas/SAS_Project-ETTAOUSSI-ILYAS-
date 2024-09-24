@@ -758,7 +758,74 @@ void taux_resolution(){
     float result = (float)resolu_taux / reclamation_count * 100;
     printf("\nLe Taux de Resolution: %.2f%%\n", result); 
 }
-void rapport_de_jour(){
+
+
+void rapport_de_jour() {
+    int nombre_en_coures = 0;
+    int nombre_resolues = 0;
+    int nombre_en_attente = 0;
+    
+    FILE *fichier = fopen("rapport_jour.txt", "w");
+
+    if (fichier == NULL) {
+        printf("Erreur lors de l'ouverture du fichier!\n");
+        return;
+    }
+    
+    fprintf(fichier, "\n###########################################");
+    fprintf(fichier, "\n### Rapport Journalier des Reclamations ###");
+    fprintf(fichier, "\n###########################################\n");
+
+    fprintf(fichier, "\nReclamations Resolues Jusqua Maintenant :");
+    fprintf(fichier, "\n#########################################\n");
+    for (int i = 0; i < reclamation_count; i++) {
+        if (strcmp(reclamations[i].status, "resolu") == 0) {
+            fprintf(fichier, "\nID: %d, Motif: %s, Date Creation: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
+            nombre_resolues++;
+        }
+    }
+
+    if (nombre_resolues == 0) {
+        fprintf(fichier, "\nAucune reclamation resolue aujourd'hui.\n");
+    }
+
+    fprintf(fichier, "\nReclamations en Traitement aujourd'hui :");
+    fprintf(fichier, "\n########################################\n");
+    for (int i = 0; i < reclamation_count; i++) {
+        if (strcmp(reclamations[i].status, "en attente") == 0) {
+            fprintf(fichier, "\nID: %d, Motif: %s, Date Traitement: %s\n", reclamations[i].id, reclamations[i].description, reclamations[i].date);
+            nombre_en_attente++;
+        }
+    }
+
+    if (nombre_en_attente == 0) {
+        fprintf(fichier, "\nAucune reclamation en attente aujourd'hui.\n");
+    }
+
+    fprintf(fichier, "\nNouvelles reclamations en cours :");
+    fprintf(fichier, "\n#################################\n");
+    for (int i = 0; i < reclamation_count; i++) {
+        if (strcmp(reclamations[i].status, "en cours") == 0) {
+            fprintf(fichier, "\nID: %d | Motif: %s || Date : %s\n", reclamations[i].id, reclamations[i].motif, reclamations[i].date);
+            nombre_en_coures++;
+        }
+    }
+
+    if (nombre_en_coures == 0) {
+        fprintf(fichier, "\nAucune en cours traiter reclamation aujourd'hui.\n");
+    }
+
+    fprintf(fichier, "\nNombre total de reclamations resolues : %d\n", nombre_resolues);
+    fprintf(fichier, "\nNombre total de reclamations en attente : %d\n", nombre_en_attente);
+    fprintf(fichier, "\nNombre total de nouvelles reclamations : %d\n", nombre_en_coures);
+    fprintf(fichier, "\n################### Fin du Rapport ###################");
+    fprintf(fichier, "\n######################################################\n");
+    fclose(fichier);
+
+    printf("\nRapport de jour creer dans 'rapport_jour.txt'\n");
+}
+
+void rapport_de_jour_console(){
     int nombre_en_coures = 0;
     int nombre_resolues = 0;
     int nombre_en_attente = 0;
