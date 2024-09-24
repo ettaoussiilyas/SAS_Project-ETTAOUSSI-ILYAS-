@@ -63,7 +63,7 @@ void unlock_compte();
 void supprimer_reclamation_24h(char client_username[]);
 void afficher_reclamations_client(char client_username[]);
 void calculer_temps_moyen_traitement();
-void modifier_reclamation_24();
+void modifier_reclamation_24(char client_username[]);
 
 
 //*************************main****************************
@@ -221,6 +221,8 @@ void menu_client(char client_username[]){
         printf("\n########################################");
         printf("\n#### Pour Supprimer Une Reaclamation 3 #");//done
         printf("\n########################################");
+        printf("\n#### Pour Modifier Une Reaclamation 4  #");//done
+        printf("\n########################################");
         printf("\n#### Pour Logout Click 0               #");
         printf("\n########################################");
 
@@ -245,6 +247,9 @@ void menu_client(char client_username[]){
             break;
         case 3:
             supprimer_reclamation_24h(client_username);//deff de date creation et carrunte date
+            break;
+        case 4:
+            modifier_reclamation_24(client_username);
             break;
         case 0:
             printf("\nMerci, a La Prochaine.\n");
@@ -465,7 +470,7 @@ void supprimer_reclamation_24h(char client_username[]){
             double check_def_time = difftime(current_time, reclamations[i].creation_time);
 
             
-            if(check_def_time > 70){
+            if(check_def_time > 86400){
                 printf("\nImpossible de supprimer la reclamation. Elle depasse 24H.\n");// (86400 s)
                 return;
             }
@@ -568,7 +573,7 @@ void super_reclamations(){
         strcpy(reclamations[0].description, "Le paiement pas ete effectue, mais l argent a ete pronee.");
         strcpy(reclamations[0].category, "argent");
         strcpy(reclamations[0].status, "en cours");
-        strcpy(reclamations[0].date, "2024-09-21");
+        strcpy(reclamations[0].date, "2024-09-25");
         strcpy(reclamations[0].client_username, "client1");
         reclamations[0].creation_time = time(NULL);  // Current time
 
@@ -577,7 +582,7 @@ void super_reclamations(){
         strcpy(reclamations[1].description, "urgent mon compte verrouille en raison de tentatives de mot de passe incorrectes.");
         strcpy(reclamations[1].category, "Account");
         strcpy(reclamations[1].status, "en cours");
-        strcpy(reclamations[1].date, "2024-09-20");
+        strcpy(reclamations[1].date, "2024-09-25");
         strcpy(reclamations[1].client_username, "client1");
         reclamations[1].creation_time = time(NULL) - 3600;  // avant 1h
 
@@ -586,7 +591,7 @@ void super_reclamations(){
         strcpy(reclamations[2].description, "Impossible d'acceder a certaines fonctionnalites de la plateforme mais c'est important.");
         strcpy(reclamations[2].category, "technique");
         strcpy(reclamations[2].status, "en cours");
-        strcpy(reclamations[2].date, "2024-09-19");
+        strcpy(reclamations[2].date, "2024-09-24");
         strcpy(reclamations[2].client_username, "client1");
         reclamations[2].creation_time = time(NULL) - 86401;  //avant 24h+1s
         reclamation_count = 3;
@@ -1008,56 +1013,76 @@ void calculer_temps_moyen_traitement(){
         printf("\nAucune reclamation resolue pour calculer le temps moyen de traitement.\n");
     }
 }
-void modifier_reclamation_24(){
-
-    if(reclamation_count == 0) {
+void modifier_reclamation_24(char client_username[]) {
+    if (reclamation_count == 0) {
         printf("\nAucune reclamation disponible.\n");
         return;
     }
-    
-    int id_recherche;
+
+    int id_supprimer;
     int trouve = 0;
     char ch;
-    
-    while(1) { 
+
+    while (1) { 
         printf("\n\nEntrer ID de reclamation pour modifier: ");
-        if(scanf("%d", &id_recherche) != 1) {
+        if (scanf("%d", &id_supprimer) != 1) {
             printf("\nErreur: Merci d'entrer un nombre valide.\n");
             while ((ch = getchar()) != '\n' && ch != EOF);  
         } else {
             break;
         }
     }
-    
+
     for (int i = 0; i < reclamation_count; i++) {
-        if (reclamations[i].id == id_recherche) {
+    
+        if (reclamations[i].id == id_supprimer && strcmp(reclamations[i].client_username, client_username) == 0) {
         
             time_t current_time = time(NULL);
             double time_diff = difftime(current_time, reclamations[i].creation_time);
-            
-            if (time_diff > 60){
-                printf("\nErreur: tu peux pas modifier la reclamtion aprer 24h.\n");
+
+            if(time_diff > 86400){
+                printf("\nErreur: tu peux pas modifier la reclamation apres 24h.\n");
                 return;
             }
 
             printf("\nSaisir la nouvelle description : ");
             getchar();
             fgets(reclamations[i].description, sizeof(reclamations[i].description), stdin);
-            
+            strtok(reclamations[i].description, "\n");
+
+            if (strlen(reclamations[i].description) <= 1) {
+                printf("\nErreur: Description vide non autorisee.\n");
+                return;
+            }
+
             printf("\nSaisir le nouveau motif : ");
             fgets(reclamations[i].motif, sizeof(reclamations[i].motif), stdin);
-            
+            strtok(reclamations[i].motif, "\n");
+
+        
+            if (strlen(reclamations[i].motif) <= 1) {
+                printf("\nErreur: Motif vide non autorise.\n");
+                return;
+            }
+
             printf("\nSaisir la nouvelle categorie : ");
             fgets(reclamations[i].category, sizeof(reclamations[i].category), stdin);
-            
+            strtok(reclamations[i].category, "\n");
+
+            if (strlen(reclamations[i].category) <= 1) {
+                printf("\nErreur: Categorie vide non autorisee.\n");
+                return;
+            }
+
             trouve = 1;
             printf("\nReclamation modifiee avec succes.\n");
             return;
         }
     }
-    
-    if(trouve == 0) {
-        printf("\nAucune reclamation avec l'ID %d trouvee !!\n", id_recherche);
+
+    if (trouve == 0) {
+        printf("\nAucune reclamation avec l'ID %d trouvee pour %s!!\n", id_supprimer, client_username);
     }
 }
+
 
