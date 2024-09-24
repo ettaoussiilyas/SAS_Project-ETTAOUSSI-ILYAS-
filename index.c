@@ -65,8 +65,7 @@ void afficher_reclamations_client(char client_username[]);
 void calculer_temps_moyen_traitement();
 
 
-//*************************main****************************7
-
+//*************************main****************************
 
 int main(){
 
@@ -446,7 +445,6 @@ void singin(){//done
 
     } while (tentative < 3);
 }
-
 void supprimer_reclamation_24h(char client_username[]){
     int id_supprimer;
     char ch;
@@ -834,7 +832,6 @@ void taux_resolution(){
     float result = (float)resolu_taux / reclamation_count * 100;
     printf("\nLe Taux de Resolution: %.2f%%\n", result); 
 }
-
 void rapport_de_jour(){
     int nombre_en_coures = 0;
     int nombre_resolues = 0;
@@ -899,7 +896,6 @@ void rapport_de_jour(){
 
     printf("\nRapport de jour creer dans 'rapport_jour.txt'\n");
 }
-
 void rapport_de_jour_console(){
     int nombre_en_coures = 0;
     int nombre_resolues = 0;
