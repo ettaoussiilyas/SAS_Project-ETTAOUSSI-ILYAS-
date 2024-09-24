@@ -365,6 +365,7 @@ void singup(){
     printf("\nVotre Compte a ete Cree avec succes.\n");
 }
 void unlock_compte(){
+
     time_t current_time = time(NULL);
     for(int i = 0; i < clients_count; i++){
         if(clients[i].locked){
@@ -385,13 +386,14 @@ void singin(){//done
         while ((c = getchar()) != '\n' && c != EOF);  
 
         printf("\nMerci de Saisir votre username : ");
-        fgets(username_login,sizeof(username_login), stdin);
-        username_login[strcspn(username_login, "\n")] = '\0';//check le dernier c'est noveau line et eviter le
-      
-        printf("\nMerci de Saisir votre password : ");
-        fgets(password_login,sizeof(password_login), stdin);
-        password_login[strcspn(password_login, "\n")] = '\0'; 
+        scanf("%s",&username_login);
+        // fgets(username_login,sizeof(username_login), stdin);
+        // username_login[strcspn(username_login, "\n")] = '\0';//check le dernier c'est noveau line et eviter le
 
+        printf("\nMerci de Saisir votre password : ");
+        scanf("%s",&password_login);
+        // fgets(password_login,sizeof(password_login), stdin);
+        // password_login[strcspn(password_login, "\n")] = '\0'; 
         trouve = 0; 
 
         for(int i = 0; i < clients_count; i++){
@@ -439,6 +441,7 @@ void singin(){//done
 
     } while (tentative < 3);
 }
+
 void supprimer_reclamation_24h(char client_username[]){
     int id_supprimer;
     char ch;
