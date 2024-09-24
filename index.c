@@ -109,7 +109,7 @@ void menu_administration(){
         printf("\n#### Pour Afficher Les Reclamation : 1       #######");//done
         printf("\n#### Pour Supprimer Une Reclamation : 2     ########");//done
         printf("\n#### Pour Modifier Status Reclamation : 3 ##########");//done
-        printf("\n#### Pour ID Reclamtion Rechecher : 4    ###########");//done
+        printf("\n#### Pour Rechecher ID Reclamtion : 4    ###########");//done
         printf("\n#### Pour Rechecher Status Reclamtion : 5 ##########");//done
         printf("\n#### Pour Modifier Une Reclamation : 6     #########");//done
         printf("\n#### Pour Changer Les Roles : 7             ########");//done
