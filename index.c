@@ -63,6 +63,7 @@ void unlock_compte();
 void supprimer_reclamation_24h(char client_username[]);
 void afficher_reclamations_client(char client_username[]);
 void calculer_temps_moyen_traitement();
+void modifier_reclamation_24();
 
 
 //*************************main****************************
@@ -1007,6 +1008,56 @@ void calculer_temps_moyen_traitement(){
         printf("\nAucune reclamation resolue pour calculer le temps moyen de traitement.\n");
     }
 }
+void modifier_reclamation_24(){
 
+    if(reclamation_count == 0) {
+        printf("\nAucune reclamation disponible.\n");
+        return;
+    }
+    
+    int id_recherche;
+    int trouve = 0;
+    char ch;
+    
+    while(1) { 
+        printf("\n\nEntrer ID de reclamation pour modifier: ");
+        if(scanf("%d", &id_recherche) != 1) {
+            printf("\nErreur: Merci d'entrer un nombre valide.\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);  
+        } else {
+            break;
+        }
+    }
+    
+    for (int i = 0; i < reclamation_count; i++) {
+        if (reclamations[i].id == id_recherche) {
+        
+            time_t current_time = time(NULL);
+            double time_diff = difftime(current_time, reclamations[i].creation_time);
+            
+            if (time_diff > 60){
+                printf("\nErreur: tu peux pas modifier la reclamtion aprer 24h.\n");
+                return;
+            }
 
+            printf("\nSaisir la nouvelle description : ");
+            getchar();
+            fgets(reclamations[i].description, sizeof(reclamations[i].description), stdin);
+            
+            printf("\nSaisir le nouveau motif : ");
+            fgets(reclamations[i].motif, sizeof(reclamations[i].motif), stdin);
+            
+            printf("\nSaisir la nouvelle categorie : ");
+            fgets(reclamations[i].category, sizeof(reclamations[i].category), stdin);
+            
+            trouve = 1;
+            printf("\nReclamation modifiee avec succes.\n");
+            return;
+        }
+    }
+    
+    if(trouve == 0) {
+        printf("\nAucune reclamation avec l'ID %d trouvee !!\n", id_recherche);
+    }
+}
 
