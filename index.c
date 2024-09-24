@@ -190,9 +190,11 @@ void menu_signup_signin(){
     printf("\n########################################");
     printf("\n#####            WELLCOM           #####");
     printf("\n########################################");
-    printf("\n#### Pour SingUp Click 1          ######");//done
-    printf("\n#### Pour SingIn Click 2          ######");//done
-    printf("\n#### Pour Quity Click 0           ######");
+    printf("\n##### Pour SingUp Click 1         ######");//done
+    printf("\n########################################");
+    printf("\n##### Pour SingIn Click 2         ######");//done
+    printf("\n########################################");
+    printf("\n##### Pour Quity Click 0          ######");
     printf("\n########################################");
     char ch;
     while(1){ 
@@ -213,10 +215,13 @@ void menu_client(char client_username[]){
         printf("\n########################################");
         printf("\n#####           CLIENT             #####");
         printf("\n########################################");
-        printf("\n#### Pour Craer Une Reaclamation 1 #####");//done
-        printf("\n#### Pour Afficher Les Reaclamation 2 ##");//done
+        printf("\n#### Pour Craer Une Reaclamation 1     #");//done
+        printf("\n########################################");
+        printf("\n#### Pour Afficher Les Reaclamation 2  #");//done
+        printf("\n########################################");
         printf("\n#### Pour Supprimer Une Reaclamation 3 #");//done
-        printf("\n#### Pour Logout Click 0          ######");
+        printf("\n########################################");
+        printf("\n#### Pour Logout Click 0               #");
         printf("\n########################################");
 
         char ch;
@@ -256,10 +261,10 @@ void menu_agent(){
         printf("\n#############################################");
         printf("\n#########         AGENT           ###########");
         printf("\n#############################################");
-        printf("\n#### Pour Afficher Les Reclamation : 1 ######");//done
-        printf("\n#### Pour Supprimer Une Reclamation : 2 #####");//done
+        printf("\n#### Pour Afficher Les Reclamation : 1  #####");//done
+        printf("\n#### Pour Supprimer Une Reclamation : 2  ####");//done
         printf("\n#### Pour Modifier Status Reclamation : 3 ###");//done
-        printf("\n#### Pour ID Reclamtion Rechecher : 4 #######");//done
+        printf("\n#### Pour ID Reclamtion Rechecher : 4     ###");//done
         printf("\n#### Pour Rechecher Status Reclamtion : 5 ###");//done
         printf("\n#### Pour Modifier Une Reclamation : 6 ######");//done
         printf("\n#### Pour Logout Click 0          ###########");
