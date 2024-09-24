@@ -441,8 +441,18 @@ void singin(){//done
 }
 void supprimer_reclamation_24h(char client_username[]){
     int id_supprimer;
-    printf("\nEnter ID of reclamation to delete: ");
-    scanf("%d", &id_supprimer);
+    // printf("\nEnter ID of reclamation to delete: ");
+    // scanf("%d", &id_supprimer);
+    char ch;
+    while(1){ 
+        printf("\n\nEnter ID of reclamation to Supprimer: ");
+        if(scanf("%d", &id_supprimer) != 1){
+            printf("\nErreur: Merci d'entrer un nombre valide.\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);  
+        }else{
+            break;
+        }
+    }
 
     for(int i = 0; i < reclamation_count; i++){
         if(reclamations[i].id == id_supprimer && strcmp(reclamations[i].client_username,client_username)==0){
@@ -467,8 +477,16 @@ void supprimer_reclamation_24h(char client_username[]){
 }
 void afficher_reclamation(){
     int id_search;
-    printf("\nSaisir l'ID de la reclamation : ");
-    scanf("%d", &id_search);
+    char ch;
+    while(1){ 
+        printf("\n\nSaisir l'ID de la reclamation : ");
+        if(scanf("%d", &id_search) != 1){
+            printf("\nErreur: Merci d'entrer un nombre valide.\n");
+            while ((ch = getchar()) != '\n' && ch != EOF);  
+        }else{
+            break;
+        }
+    }
     if (reclamation_count == 0) {
         printf("\nAucune reclamation disponible.\n");
         return;
